@@ -1,0 +1,22 @@
+{
+  "name": "@mattb.tech/stablio-infrastructure",
+  "version": "1.0.0",
+  "main": "main.js",
+  "types": "main.ts",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "synth": "cdktf synth",
+    "bootstrap": "AWS_PROFILE=admin-legacy-sso cdktf deploy",
+    "deploy": "cdktf deploy --auto-approve"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@cdktf/provider-aws": "17.0.4",
+    "cdktf": "^0.18.0",
+    "cdktf-cli": "^0.18.0",
+    "constructs": "^10.2.70",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "@mattb.tech/stablio",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "deploy": "yarn workspace @mattb.tech/stablio-infrastructure run bootstrap"
+  }
+}
