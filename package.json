@@ -5,6 +5,6 @@
     "packages/*"
   ],
   "scripts": {
-    "deploy": "yarn workspace @mattb.tech/stablio-infrastructure run bootstrap"
+    "deploy": "yarn workspace @mattb.tech/stablio-infrastructure run deploy"
   }
 }
