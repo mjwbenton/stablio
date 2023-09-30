@@ -13,7 +13,7 @@ export class StablioEmailStack extends TerraformStack {
 
     new S3Backend(this, {
       bucket: "mattb.tech-terraform-state",
-      key: "stablio.tfstate",
+      key: "stablio-email.tfstate",
       region: "us-east-1",
     })
 
