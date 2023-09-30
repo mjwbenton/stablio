@@ -56,7 +56,7 @@ export class NodejsFunction extends Construct {
     });
 
     const bucket = new aws.s3Bucket.S3Bucket(this, "bucket", {
-        bucket: namer.name("bucket"), 
+        bucket: namer.lower("bucket"), 
     });
 
     const assetPath = `${asset.assetHash}/${asset.fileName}`;
