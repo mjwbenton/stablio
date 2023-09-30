@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { TerraformAsset, AssetType } from 'cdktf';
 import { resolve, join } from 'path';
 import * as aws from "@cdktf/provider-aws";
-import { Namer } from './namer';
+import { Namer } from './Namer';
 
 const LAMBDA_ROLE_POLICY = {
   "Version": "2012-10-17",
