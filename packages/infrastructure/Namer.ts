@@ -16,6 +16,6 @@ export class Namer {
     }
 
     public lower(resource: string): string {
-        return this.name(resource).toLowerCase();
+        return `${PREFIX}-${this.construct.toLowerCase()}-${resource.toLowerCase()}-${this.pet.id}`;
     }
 }
