@@ -13,9 +13,12 @@
   "dependencies": {},
   "devDependencies": {
     "@cdktf/provider-aws": "17.0.4",
+    "@cdktf/provider-random": "^9.0.0",
+    "@tsconfig/node18": "^18.2.2",
     "cdktf": "^0.18.0",
     "cdktf-cli": "^0.18.0",
     "constructs": "^10.2.70",
+    "esbuild": "^0.19.3",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   }

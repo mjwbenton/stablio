@@ -1,0 +1,15 @@
+{
+  "name": "@mattb.tech/stablio-ingestion-lambda",
+  "version": "1.0.0",
+  "main": "index.js",
+  "types": "index.ts",
+  "private": true,
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@tsconfig/node18": "^18.2.2",
+    "typescript": "^5.2.2"
+  }
+}
