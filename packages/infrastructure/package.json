@@ -7,8 +7,8 @@
   "scripts": {
     "build": "tsc",
     "synth": "cdktf synth",
-    "bootstrap": "AWS_PROFILE=admin-legacy-sso cdktf deploy",
-    "deploy": "cdktf deploy --auto-approve"
+    "bootstrap": "AWS_PROFILE=admin-legacy-sso cdktf deploy stablio-email stablio-ingestion",
+    "deploy": "cdktf deploy --auto-approve stablio-email stablio-ingestion"
   },
   "dependencies": {},
   "devDependencies": {
