@@ -136,7 +136,13 @@ export class StablioEmailStack extends TerraformStack {
   public subscribeLambdaToNewEmails(
     scope: Construct,
     id: string,
-    { lambda }: { lambda: aws.lambdaFunction.LambdaFunction },
+    {
+      lambda,
+      lambdaRole,
+    }: {
+      lambda: aws.lambdaFunction.LambdaFunction;
+      lambdaRole: aws.iamRole.IamRole;
+    },
   ) {
     new aws.s3BucketNotification.S3BucketNotification(
       scope,
@@ -158,7 +164,7 @@ export class StablioEmailStack extends TerraformStack {
       sourceArn: this.emailBucket.arn,
     });
     new aws.iamRolePolicy.IamRolePolicy(scope, `${id}ReadS3Permission`, {
-      role: lambda.role,
+      role: lambdaRole.name,
       policy: JSON.stringify({
         Version: "2012-10-17",
         Statement: [

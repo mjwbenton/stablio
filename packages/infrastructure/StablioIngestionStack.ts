@@ -7,6 +7,7 @@ import * as path from "path";
 
 export class StablioIngestionStack extends TerraformStack {
   readonly lambda: aws.lambdaFunction.LambdaFunction;
+  readonly lambdaRole: aws.iamRole.IamRole;
 
   constructor(scope: Construct, name: string) {
     super(scope, name);
@@ -23,9 +24,12 @@ export class StablioIngestionStack extends TerraformStack {
 
     new random.provider.RandomProvider(this, "random");
 
-    this.lambda = new NodejsFunction(this, "LambdaCode", {
+    const nodeJsFunction = new NodejsFunction(this, "LambdaCode", {
       path: path.join(__dirname, "..", "ingestion-lambda"),
       handler: "index.handler",
-    }).lambda;
+    });
+
+    this.lambda = nodeJsFunction.lambda;
+    this.lambdaRole = nodeJsFunction.role;
   }
 }
