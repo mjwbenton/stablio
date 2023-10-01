@@ -19,11 +19,6 @@ const LAMBDA_ROLE_POLICY = {
   ],
 };
 
-export interface NodejsFunctionProps {
-  handler: string;
-  path: string;
-}
-
 const bundle = (workingDirectory: string) => {
   buildSync({
     entryPoints: ["index.ts"],
@@ -46,7 +41,11 @@ export class NodejsFunction extends Construct {
   constructor(
     scope: Construct,
     id: string,
-    { handler, path }: NodejsFunctionProps,
+    {
+      handler,
+      path,
+      environment,
+    }: { handler: string; path: string; environment?: Record<string, string> },
   ) {
     super(scope, id);
     const namer = new Namer(this, id);
@@ -95,6 +94,7 @@ export class NodejsFunction extends Construct {
       handler,
       memorySize: 1024,
       timeout: 10,
+      environment,
     });
   }
 }
