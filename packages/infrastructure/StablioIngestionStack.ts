@@ -6,6 +6,8 @@ import { NodejsFunction } from "./NodeJsFunction";
 import * as path from "path";
 
 export class StablioIngestionStack extends TerraformStack {
+  readonly lambda: aws.lambdaFunction.LambdaFunction;
+
   constructor(scope: Construct, name: string, args: { bucket: aws.s3Bucket.S3Bucket }) {
     super(scope, name);
 
@@ -21,17 +23,9 @@ export class StablioIngestionStack extends TerraformStack {
 
     new random.provider.RandomProvider(this, "random");
 
-    const nodeJsFunction = new NodejsFunction(this, "LambdaCode", {
+    this.lambda = new NodejsFunction(this, "LambdaCode", {
        path: path.join(__dirname, "..", "ingestion-lambda"),
        handler: "index.handler"
-    });
-
-    /*new aws.s3BucketNotification.S3BucketNotification(this, 'BucketNotification', {
-      bucket: args.bucket.bucket,
-      lambdaFunction: [{
-        lambdaFunctionArn: lambdaFunction.arn,
-        events: ['s3:ObjectCreated:*'],
-      }],
-    });*/
+    }).lambda;
   }
 }

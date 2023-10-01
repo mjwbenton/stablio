@@ -28,7 +28,7 @@ export class StablioEmailStack extends TerraformStack {
     this.createEmailRule(this.emailBucket);
   }
 
-  setupSESForDomain() {
+  private setupSESForDomain() {
     const domainIdentity = new aws.sesDomainIdentity.SesDomainIdentity(this, "SESDomainIdentity", {
       domain: EMAIL_DOMAIN
     })
@@ -55,7 +55,7 @@ export class StablioEmailStack extends TerraformStack {
     });
   }
 
-  createEmailRule(bucket: aws.s3Bucket.S3Bucket) {
+  private createEmailRule(bucket: aws.s3Bucket.S3Bucket) {
     const emailRuleSet = new aws.sesReceiptRuleSet.SesReceiptRuleSet(this, "SESRuleSet", {
       ruleSetName: "stablio-email-rule-set"
     });
@@ -98,6 +98,23 @@ export class StablioEmailStack extends TerraformStack {
 
     new aws.sesActiveReceiptRuleSet.SesActiveReceiptRuleSet(this, "SESActiveRuleSet", {
       ruleSetName: emailRuleSet.ruleSetName
+    })
+
+  }
+
+  public subscribeLambdaToNewEmails(scope: Construct, id: string, { lambda }: { lambda: aws.lambdaFunction.LambdaFunction }) {
+    new aws.s3BucketNotification.S3BucketNotification(scope, `${id}BucketNotification`, {
+      bucket: this.emailBucket.bucket,
+      lambdaFunction: [{
+        lambdaFunctionArn: lambda.arn,
+        events: ['s3:ObjectCreated:*'],
+      }],
+    });
+    new aws.lambdaPermission.LambdaPermission(scope, `${id}Permission`, {
+        functionName: lambda.functionName,
+        action: "lambda:InvokeFunction",
+        principal: "s3.amazonaws.com",
+        sourceArn: this.emailBucket.arn
     })
   }
 }

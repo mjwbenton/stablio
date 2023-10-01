@@ -7,9 +7,15 @@
   "scripts": {
     "build": "tsc"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.421.0",
+    "mailparser": "^3.6.5",
+    "stream-to-string": "^1.2.1"
+  },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",
+    "@types/aws-lambda": "^8.10.122",
+    "@types/mailparser": "^3.4.1",
     "typescript": "^5.2.2"
   }
 }
