@@ -8,11 +8,7 @@ import * as path from "path";
 export class StablioIngestionStack extends TerraformStack {
   readonly lambda: aws.lambdaFunction.LambdaFunction;
 
-  constructor(
-    scope: Construct,
-    name: string,
-    args: { bucket: aws.s3Bucket.S3Bucket },
-  ) {
+  constructor(scope: Construct, name: string) {
     super(scope, name);
 
     new S3Backend(this, {
