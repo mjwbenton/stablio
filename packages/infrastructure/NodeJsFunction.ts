@@ -93,6 +93,8 @@ export class NodejsFunction extends Construct {
       role: this.role.arn,
       runtime: "nodejs18.x",
       handler,
+      memorySize: 1024,
+      timeout: 10,
     });
   }
 }
