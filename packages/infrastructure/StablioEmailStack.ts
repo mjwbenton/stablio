@@ -157,5 +157,18 @@ export class StablioEmailStack extends TerraformStack {
       principal: "s3.amazonaws.com",
       sourceArn: this.emailBucket.arn,
     });
+    new aws.iamRolePolicy.IamRolePolicy(scope, `${id}ReadS3Permission`, {
+      role: lambda.role,
+      policy: JSON.stringify({
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Action: ["s3:GetObject", "s3:ListBucket"],
+            Resource: [this.emailBucket.arn + "/*"],
+          },
+        ],
+      }),
+    });
   }
 }
