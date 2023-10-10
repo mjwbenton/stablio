@@ -10,7 +10,8 @@
     "bootstrap": "AWS_PROFILE=admin-legacy-sso cdktf deploy stablio-data stablio-email stablio-ingestion",
     "deploy": "cdktf deploy --auto-approve stablio-data stablio-email stablio-ingestion",
     "format:check": "prettier --check '**/*' -u --ignore-path ../../.gitignore",
-    "format:write": "prettier --write '**/*' -u --ignore-path ../../.gitignore"
+    "format:write": "prettier --write '**/*' -u --ignore-path ../../.gitignore",
+    "postinstall": "cdktf get"
   },
   "dependencies": {},
   "devDependencies": {
