@@ -46,12 +46,17 @@ export async function handler(event: AWSLambda.S3Event) {
     );
   });
 
-  const [_, titleLine, byLine, __, ___, ____, _____, ______, ...highlights] =
+  const [_, [title], [byLine], __, ___, ____, _____, ______, ...highlights] =
     records;
 
+  const author = byLine.substring(3);
+
   console.log({
-    titleLine,
-    byLine,
-    highlights,
+    title,
+    author,
+    highlights: highlights.map(([_, location, __, text]) => ({
+      location: parseInt(location.substring(9)),
+      text,
+    })),
   });
 }
