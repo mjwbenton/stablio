@@ -5,6 +5,7 @@
     "packages/*"
   ],
   "scripts": {
-    "deploy": "yarn workspace @mattb.tech/stablio-infrastructure run deploy"
+    "deploy": "yarn workspace @mattb.tech/stablio-infrastructure run deploy",
+    "db-migrate": "yarn workspace @mattb.tech/stablio-db run drizzle:migrate"
   }
 }
