@@ -1,6 +1,7 @@
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import mailparser from "mailparser";
 import { parse } from "csv-parse";
+import { db, book, highlights } from "@mattb.tech/stablio-db";
 
 const S3 = new S3Client({});
 
@@ -29,7 +30,21 @@ export async function handler(event: AWSLambda.S3Event) {
   if (!csvAttachment) {
     throw new Error("No CSV attachment");
   }
-  const records = await new Promise<string[][]>((res, rej) => {
+
+  const records = await parseCsv(csvAttachment);
+  const { title, author, highlights: newHighlights } = reformatRecords(records);
+
+  const [{ bookId }] = await db
+    .insert(book)
+    .values({ title, author })
+    .returning({ bookId: book.id });
+  await db
+    .insert(highlights)
+    .values(newHighlights.map((value) => ({ bookId, ...value })));
+}
+
+async function parseCsv(csvAttachment: string): Promise<string[][]> {
+  return await new Promise<string[][]>((res, rej) => {
     parse(
       csvAttachment,
       {
@@ -45,18 +60,20 @@ export async function handler(event: AWSLambda.S3Event) {
       },
     );
   });
+}
 
+function reformatRecords(records: string[][]) {
   const [_, [title], [byLine], __, ___, ____, _____, ______, ...highlights] =
     records;
 
   const author = byLine.substring(3);
 
-  console.log({
+  return {
     title,
     author,
     highlights: highlights.map(([_, location, __, text]) => ({
       location: parseInt(location.substring(9)),
       text,
     })),
-  });
+  };
 }
