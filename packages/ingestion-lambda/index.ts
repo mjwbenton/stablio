@@ -1,5 +1,6 @@
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import mailparser from "mailparser";
+import { parse } from "csv-parse";
 
 const S3 = new S3Client({});
 
@@ -22,5 +23,18 @@ export async function handler(event: AWSLambda.S3Event) {
   const parsedEmail = await mailparser.simpleParser(
     await data.Body.transformToString(),
   );
-  console.log(JSON.stringify(parsedEmail, null, 2));
+  const csvAttachment = parsedEmail.attachments.find(
+    ({ contentType }) => contentType === "text/csv",
+  );
+  if (!csvAttachment) {
+    throw new Error("No CSV attachment");
+  }
+  const parser = parse(csvAttachment.content.toString("utf-8"), {
+    trim: true,
+    skip_empty_lines: true,
+  });
+
+  for await (const record of parser) {
+    console.log(record);
+  }
 }
