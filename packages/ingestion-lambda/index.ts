@@ -29,14 +29,29 @@ export async function handler(event: AWSLambda.S3Event) {
   if (!csvAttachment) {
     throw new Error("No CSV attachment");
   }
-  console.log(csvAttachment);
-  const parser = parse(csvAttachment, {
-    trim: true,
-    skip_empty_lines: true,
-    relax_quotes: true,
+  const records = await new Promise<string[][]>((res, rej) => {
+    parse(
+      csvAttachment,
+      {
+        trim: true,
+        skip_empty_lines: true,
+        relax_quotes: true,
+      },
+      (err, records) => {
+        if (err) {
+          rej(err);
+        }
+        res(records);
+      },
+    );
   });
 
-  for await (const record of parser) {
-    console.log(record);
-  }
+  const [_, titleLine, byLine, __, ___, ____, _____, ______, ...highlights] =
+    records;
+
+  console.log({
+    titleLine,
+    byLine,
+    highlights,
+  });
 }
