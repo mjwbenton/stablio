@@ -20,4 +20,8 @@ jobs:
           aws-region: us-east-1
       - run: yarn install --frozen-lockfile
       - run: yarn deploy
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
       - run: yarn db-migrate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
