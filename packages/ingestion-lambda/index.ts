@@ -33,6 +33,7 @@ export async function handler(event: AWSLambda.S3Event) {
   const parser = parse(csvAttachment, {
     trim: true,
     skip_empty_lines: true,
+    relax_quotes: true,
   });
 
   for await (const record of parser) {
