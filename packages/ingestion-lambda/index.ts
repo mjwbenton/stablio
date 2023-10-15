@@ -23,13 +23,14 @@ export async function handler(event: AWSLambda.S3Event) {
   const parsedEmail = await mailparser.simpleParser(
     await data.Body.transformToString(),
   );
-  const csvAttachment = parsedEmail.attachments.find(
-    ({ contentType }) => contentType === "text/csv",
-  );
+  const csvAttachment = parsedEmail.attachments
+    .find(({ contentType }) => contentType === "text/csv")
+    ?.content.toString("utf-8");
   if (!csvAttachment) {
     throw new Error("No CSV attachment");
   }
-  const parser = parse(csvAttachment.content.toString("utf-8"), {
+  console.log(csvAttachment);
+  const parser = parse(csvAttachment, {
     trim: true,
     skip_empty_lines: true,
   });
