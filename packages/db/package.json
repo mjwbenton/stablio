@@ -1,0 +1,26 @@
+{
+  "name": "@mattb.tech/stablio-db",
+  "version": "1.0.0",
+  "main": "index.js",
+  "types": "index.ts",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "format:check": "prettier --check '**/*' -u --ignore-path ../../.gitignore",
+    "format:write": "prettier --write '**/*' -u --ignore-path ../../.gitignore",
+    "drizzle:generate": "drizzle-kit generate:pg --schema ./schema.ts",
+    "drizzle:migrate": "ts-node ./migrate.ts"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.6.0",
+    "dotenv": "^16.3.1",
+    "drizzle-orm": "^0.28.6",
+    "envalid": "^8.0.0"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.19.13",
+    "prettier": "^3.0.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}

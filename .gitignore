@@ -3,3 +3,4 @@ cdktf.out
 dist
 *.js
 .gen
+.env
