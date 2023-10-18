@@ -39,7 +39,7 @@ export class StablioIngestionStack extends TerraformStack {
     });
 
     new aws.iamRolePolicy.IamRolePolicy(
-      scope,
+      this,
       "LambdaReadDatabaseSecretPolicy",
       {
         role: nodeJsFunction.role.name,
