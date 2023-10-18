@@ -16,13 +16,13 @@ export const highlights = pgTable(
   "highlights",
   {
     id: serial("id").primaryKey(),
-    book: integer("bookId")
+    bookId: integer("bookId")
       .references(() => book.id)
       .notNull(),
     location: integer("location").notNull(),
     text: text("text").notNull(),
   },
   (t) => ({
-    unq: unique().on(t.book, t.location),
+    unq: unique().on(t.bookId, t.location),
   }),
 );
