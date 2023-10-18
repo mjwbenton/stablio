@@ -12,8 +12,8 @@ export const book = pgTable(
   }),
 );
 
-export const highlights = pgTable(
-  "highlights",
+export const highlight = pgTable(
+  "highlight",
   {
     id: serial("id").primaryKey(),
     bookId: integer("bookId")

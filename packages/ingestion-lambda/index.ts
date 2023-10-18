@@ -1,7 +1,7 @@
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import mailparser from "mailparser";
 import { parse } from "csv-parse";
-import { db, book, highlights } from "@mattb.tech/stablio-db";
+import { db, book, highlight, sql } from "@mattb.tech/stablio-db";
 
 const S3 = new S3Client({});
 
@@ -33,15 +33,23 @@ export async function handler(event: AWSLambda.S3Event) {
   }
 
   const records = await parseCsv(csvAttachment);
-  const { title, author, highlights: newHighlights } = reformatRecords(records);
+  const { title, author, highlights } = reformatRecords(records);
 
   const [{ bookId }] = await dbClient
     .insert(book)
     .values({ title, author })
+    .onConflictDoUpdate({
+      target: [book.title, book.author],
+      set: { author, title },
+    })
     .returning({ bookId: book.id });
   await dbClient
-    .insert(highlights)
-    .values(newHighlights.map((value) => ({ bookId, ...value })));
+    .insert(highlight)
+    .values(highlights.map((value) => ({ bookId, ...value })))
+    .onConflictDoUpdate({
+      target: [highlight.bookId, highlight.location],
+      set: { text: sql`excluded.text` },
+    });
 }
 
 async function parseCsv(csvAttachment: string): Promise<string[][]> {
