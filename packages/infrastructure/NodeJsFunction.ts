@@ -94,7 +94,9 @@ export class NodejsFunction extends Construct {
       handler,
       memorySize: 1024,
       timeout: 10,
-      environment,
+      environment: {
+        variables: environment,
+      },
     });
   }
 }
