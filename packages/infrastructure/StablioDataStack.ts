@@ -4,6 +4,8 @@ import * as neon from "./.gen/providers/neon";
 import * as aws from "@cdktf/provider-aws";
 
 export class StablioDataStack extends TerraformStack {
+  readonly databaseSecret: aws.secretsmanagerSecret.SecretsmanagerSecret;
+
   constructor(scope: Construct, name: string) {
     super(scope, name);
 
@@ -24,7 +26,7 @@ export class StablioDataStack extends TerraformStack {
       regionId: "aws-eu-central-1",
     });
 
-    const databaseSecret = new aws.secretsmanagerSecret.SecretsmanagerSecret(
+    this.databaseSecret = new aws.secretsmanagerSecret.SecretsmanagerSecret(
       this,
       "Secret",
       {
@@ -36,7 +38,7 @@ export class StablioDataStack extends TerraformStack {
       this,
       "SecretVersion",
       {
-        secretId: databaseSecret.id,
+        secretId: this.databaseSecret.id,
         secretString: Fn.jsonencode({
           host: neonProject.databaseHost,
           user: neonProject.databaseUser,
@@ -46,12 +48,8 @@ export class StablioDataStack extends TerraformStack {
       },
     );
 
-    new TerraformOutput(this, "ProjectId", {
-      value: neonProject.id,
-    });
-
-    new TerraformOutput(this, "BranchId", {
-      value: neonProject.defaultBranchId,
+    new TerraformOutput(this, "DatabaseSecretId", {
+      value: this.databaseSecret.id,
     });
   }
 }

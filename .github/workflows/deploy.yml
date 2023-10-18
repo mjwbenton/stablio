@@ -14,14 +14,17 @@ jobs:
         with:
           node-version: "18"
           cache: "yarn"
+      - uses: hashicorp/setup-terraform@v2
       - uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           role-to-assume: arn:aws:iam::858777967843:role/github-actions-admin
           aws-region: us-east-1
       - run: yarn install --frozen-lockfile
-      - run: yarn deploy
+      - name: Deploy Infra
+        run: yarn deploy
         env:
           NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
-      - run: yarn db-migrate
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      - name: Fetch DatabaseSecretId
+        run: echo "DATABASE_SECRET=$(terraform -chdir=./packages/infrastructure/cdktf.out/stacks/stablio-data output -raw DatabaseSecretId)" >> $GITHUB_ENV
+      - name: Run DB migrations
+        run: yarn db-migrate

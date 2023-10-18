@@ -12,8 +12,8 @@
     "drizzle:migrate": "ts-node ./migrate.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.428.0",
     "@neondatabase/serverless": "^0.6.0",
-    "dotenv": "^16.3.1",
     "drizzle-orm": "^0.28.6",
     "envalid": "^8.0.0"
   },

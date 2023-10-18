@@ -6,6 +6,7 @@ import { db, book, highlights } from "@mattb.tech/stablio-db";
 const S3 = new S3Client({});
 
 export async function handler(event: AWSLambda.S3Event) {
+  const dbClient = await db;
   const record = event.Records[0];
   const bucket = record.s3.bucket.name;
   const key = decodeURIComponent(record.s3.object.key);
@@ -34,11 +35,11 @@ export async function handler(event: AWSLambda.S3Event) {
   const records = await parseCsv(csvAttachment);
   const { title, author, highlights: newHighlights } = reformatRecords(records);
 
-  const [{ bookId }] = await db
+  const [{ bookId }] = await dbClient
     .insert(book)
     .values({ title, author })
     .returning({ bookId: book.id });
-  await db
+  await dbClient
     .insert(highlights)
     .values(newHighlights.map((value) => ({ bookId, ...value })));
 }

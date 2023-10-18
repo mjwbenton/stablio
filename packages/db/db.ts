@@ -1,8 +1,13 @@
 import { neon, neonConfig } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
-import { DATABASE_URL } from "./env";
+import { config } from "./config";
 
 neonConfig.fetchConnectionCache = true;
 
-const sql = neon(DATABASE_URL);
-export const db = drizzle(sql);
+async function buildDb() {
+  const { DATABASE_URL } = await config;
+  const sql = neon(DATABASE_URL);
+  return drizzle(sql);
+}
+
+export const db = buildDb();

@@ -9,7 +9,13 @@ export class StablioIngestionStack extends TerraformStack {
   readonly lambda: aws.lambdaFunction.LambdaFunction;
   readonly lambdaRole: aws.iamRole.IamRole;
 
-  constructor(scope: Construct, name: string) {
+  constructor(
+    scope: Construct,
+    name: string,
+    {
+      databaseSecret,
+    }: { databaseSecret: aws.secretsmanagerSecret.SecretsmanagerSecret },
+  ) {
     super(scope, name);
 
     new S3Backend(this, {
@@ -27,7 +33,9 @@ export class StablioIngestionStack extends TerraformStack {
     const nodeJsFunction = new NodejsFunction(this, "LambdaCode", {
       path: path.join(__dirname, "..", "ingestion-lambda"),
       handler: "index.handler",
-      environment: {},
+      environment: {
+        DATABASE_SECRET: databaseSecret.id,
+      },
     });
 
     this.lambda = nodeJsFunction.lambda;
