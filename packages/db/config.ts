@@ -4,7 +4,7 @@ import {
   GetSecretValueCommand,
 } from "@aws-sdk/client-secrets-manager";
 
-const SECRET_MANAGER_CLIENT = new SecretsManagerClient({});
+const SECRET_MANAGER_CLIENT = new SecretsManagerClient({ region: "eu-west-1" });
 
 const { DATABASE_SECRET } = cleanEnv(process.env, {
   DATABASE_SECRET: str(),
