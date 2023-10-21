@@ -6,35 +6,28 @@ import { db, book, highlight, sql } from "@mattb.tech/stablio-db";
 const S3 = new S3Client({});
 
 export async function handler(event: AWSLambda.S3Event) {
-  const dbClient = await db;
-  const record = event.Records[0];
-  const bucket = record.s3.bucket.name;
-  const key = decodeURIComponent(record.s3.object.key);
-
-  const data = await S3.send(
-    new GetObjectCommand({
-      Bucket: bucket,
-      Key: key,
-    }),
-  );
-
-  if (!data.Body) {
-    throw new Error("Missing data body");
-  }
-
-  const parsedEmail = await mailparser.simpleParser(
-    await data.Body.transformToString(),
-  );
-  const csvAttachment = parsedEmail.attachments
-    .find(({ contentType }) => contentType === "text/csv")
-    ?.content.toString("utf-8");
-  if (!csvAttachment) {
-    throw new Error("No CSV attachment");
-  }
-
+  const emailString = await fetchEmailFromS3(event);
+  const csvAttachment = await extractCsv(emailString);
   const records = await parseCsv(csvAttachment);
-  const { title, author, highlights } = reformatRecords(records);
+  const bookHighlights = formatBookHighlights(records);
+  await insertIntoDb(bookHighlights);
+}
 
+interface BookHighlights {
+  title: string;
+  author: string;
+  highlights: {
+    location: number;
+    text: string;
+  }[];
+}
+
+async function insertIntoDb({
+  title,
+  author,
+  highlights,
+}: BookHighlights): Promise<void> {
+  const dbClient = await db;
   const [{ bookId }] = await dbClient
     .insert(book)
     .values({ title, author })
@@ -50,6 +43,36 @@ export async function handler(event: AWSLambda.S3Event) {
       target: [highlight.bookId, highlight.location],
       set: { text: sql`excluded.text` },
     });
+}
+
+async function fetchEmailFromS3(event: AWSLambda.S3Event): Promise<string> {
+  const record = event.Records[0];
+  const bucket = record.s3.bucket.name;
+  const key = decodeURIComponent(record.s3.object.key);
+
+  const data = await S3.send(
+    new GetObjectCommand({
+      Bucket: bucket,
+      Key: key,
+    }),
+  );
+
+  if (!data.Body) {
+    throw new Error("Missing data body");
+  }
+
+  return data.Body.transformToString();
+}
+
+async function extractCsv(emailString: string) {
+  const parsedEmail = await mailparser.simpleParser(emailString);
+  const csvAttachment = parsedEmail.attachments
+    .find(({ contentType }) => contentType === "text/csv")
+    ?.content.toString("utf-8");
+  if (!csvAttachment) {
+    throw new Error("No CSV attachment");
+  }
+  return csvAttachment;
 }
 
 async function parseCsv(csvAttachment: string): Promise<string[][]> {
@@ -71,7 +94,7 @@ async function parseCsv(csvAttachment: string): Promise<string[][]> {
   });
 }
 
-function reformatRecords(records: string[][]) {
+function formatBookHighlights(records: string[][]) {
   const [_, [title], [byLine], __, ___, ____, _____, ______, ...highlights] =
     records;
 
