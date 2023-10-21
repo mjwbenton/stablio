@@ -37,7 +37,8 @@ export async function findBillioId(title: string) {
       searchTerm: title,
     },
   });
-  const billioId = result.data.books.items?.[0].id;
+  console.log(`GraphQL Response: ${JSON.stringify(result, null, 2)}`);
+  const billioId = result.data.books.items?.[0]?.id;
   console.log(`Found billioId: ${billioId}`);
   return billioId;
 }
