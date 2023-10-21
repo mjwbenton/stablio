@@ -1,4 +1,9 @@
-import { ApolloClient, InMemoryCache, HttpLink, gql } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  HttpLink,
+  gql,
+} from "@apollo/client/core";
 
 const ENDPOINT = "https://api-readonly.billio.mattb.tech";
 const CLIENT = new ApolloClient({
