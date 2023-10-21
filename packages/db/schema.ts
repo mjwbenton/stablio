@@ -1,4 +1,12 @@
-import { integer, pgTable, serial, text, unique } from "drizzle-orm/pg-core";
+import {
+  index,
+  integer,
+  pgTable,
+  serial,
+  text,
+  unique,
+  uniqueIndex,
+} from "drizzle-orm/pg-core";
 
 export const book = pgTable(
   "book",
@@ -6,9 +14,11 @@ export const book = pgTable(
     id: serial("id").primaryKey(),
     title: text("title").notNull(),
     author: text("author").notNull(),
+    billioId: text("billioId"),
   },
   (t) => ({
     unq: unique().on(t.title, t.author),
+    billioIdIdx: uniqueIndex().on(t.billioId),
   }),
 );
 
@@ -24,5 +34,6 @@ export const highlight = pgTable(
   },
   (t) => ({
     unq: unique().on(t.bookId, t.location),
+    bookIdIdx: index().on(t.bookId),
   }),
 );
