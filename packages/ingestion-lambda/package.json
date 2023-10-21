@@ -11,9 +11,11 @@
     "format:write": "prettier --write '**/*' -u --ignore-path ../../.gitignore"
   },
   "dependencies": {
-    "@mattb.tech/stablio-db": "*",
+    "@apollo/client": "^3.8.6",
     "@aws-sdk/client-s3": "^3.421.0",
+    "@mattb.tech/stablio-db": "*",
     "csv-parse": "^5.5.2",
+    "graphql": "^16.8.1",
     "mailparser": "^3.6.5",
     "stream-to-string": "^1.2.1"
   },

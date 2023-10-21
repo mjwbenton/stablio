@@ -2,6 +2,7 @@ import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import mailparser from "mailparser";
 import { parse } from "csv-parse";
 import { db, book, highlight, sql } from "@mattb.tech/stablio-db";
+import { findBillioId } from "./billioSearch.js";
 
 const S3 = new S3Client({});
 
@@ -10,7 +11,9 @@ export async function handler(event: AWSLambda.S3Event) {
   const csvAttachment = await extractCsv(emailString);
   const records = await parseCsv(csvAttachment);
   const bookHighlights = formatBookHighlights(records);
-  await insertIntoDb(bookHighlights);
+  const billioId = await findBillioId(bookHighlights.title);
+  console.log(`Records to write: ${{ ...bookHighlights, billioId }}`);
+  await insertIntoDb({ ...bookHighlights, billioId });
 }
 
 interface BookHighlights {
@@ -22,18 +25,23 @@ interface BookHighlights {
   }[];
 }
 
+interface BookHighlightsWithBillio extends BookHighlights {
+  billioId: string | undefined;
+}
+
 async function insertIntoDb({
   title,
   author,
+  billioId,
   highlights,
-}: BookHighlights): Promise<void> {
+}: BookHighlightsWithBillio): Promise<void> {
   const dbClient = await db;
   const [{ bookId }] = await dbClient
     .insert(book)
-    .values({ title, author })
+    .values({ title, author, billioId })
     .onConflictDoUpdate({
       target: [book.title, book.author],
-      set: { author, title },
+      set: { author, title, billioId },
     })
     .returning({ bookId: book.id });
   await dbClient
@@ -94,7 +102,7 @@ async function parseCsv(csvAttachment: string): Promise<string[][]> {
   });
 }
 
-function formatBookHighlights(records: string[][]) {
+function formatBookHighlights(records: string[][]): BookHighlights {
   const [_, [title], [byLine], __, ___, ____, _____, ______, ...highlights] =
     records;
 
