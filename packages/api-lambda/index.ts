@@ -16,13 +16,13 @@ export async function handler(event: AWSLambda.APIGatewayProxyEventV2) {
 
   if (!result.length) {
     return {
-      status: 404,
+      statusCode: 404,
       body: `{}`,
     };
   }
 
   return {
-    status: 200,
+    statusCode: 200,
     body: JSON.stringify({
       billioId,
       highlights: result.map(({ highlight: { location, text } }) => ({
