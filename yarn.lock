@@ -1129,6 +1129,11 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
+"@datastructures-js/heap@^4.0.2":
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/@datastructures-js/heap/-/heap-4.3.2.tgz#54e800f12441d197c6275dff1ed140072ac0ba9c"
+  integrity sha512-7/9QSsIZ+wMG3C9++mz9iOjdtTp9C036PISHvNjG3eyFO8nXOBJQFKgeV7M6/+EPl+oXXFRGBb8Ue60LsqTqGw==
+
 "@drizzle-team/studio@^0.0.5":
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/@drizzle-team/studio/-/studio-0.0.5.tgz#d2488ab4e8e755cc69287e2267cc4033a0e6ca35"
@@ -2671,6 +2676,13 @@ available-typed-arrays@^1.0.5:
   version "1.0.5"
   resolved "https://registry.npmjs.org/available-typed-arrays/-/available-typed-arrays-1.0.5.tgz"
   integrity sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==
+
+aws-embedded-metrics@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/aws-embedded-metrics/-/aws-embedded-metrics-4.1.0.tgz#2237e6681d0a9e32fb743974dc0e97e3844599a1"
+  integrity sha512-Yiscee2EfyiczIy9GFOSR0qzqD6kcD0HjQuBJRyO842SkKoFlxzOo/99OVEmg2odUS5XI8oxiS7HO0WTynkteg==
+  dependencies:
+    "@datastructures-js/heap" "^4.0.2"
 
 balanced-match@^1.0.0:
   version "1.0.2"

@@ -3,18 +3,32 @@ import mailparser from "mailparser";
 import { parse } from "csv-parse";
 import { db, book, highlight, sql } from "@mattb.tech/stablio-db";
 import { findBillioId } from "./billioSearch.js";
+import { Unit, metricScope } from "aws-embedded-metrics";
 
 const S3 = new S3Client({});
 
-export async function handler(event: AWSLambda.S3Event) {
-  const emailString = await fetchEmailFromS3(event);
-  const csvAttachment = await extractCsv(emailString);
-  const records = await parseCsv(csvAttachment);
-  const bookHighlights = formatBookHighlights(records);
-  const billioId = await findBillioId(bookHighlights.title);
-  console.log(`Records to write: ${{ ...bookHighlights, billioId }}`);
-  await insertIntoDb({ ...bookHighlights, billioId });
-}
+const METRIC_NAMESPACE = "Stablio";
+const BILLIO_SEARCH_METRIC = "BillioSearchSuccess";
+
+export const handler = metricScope(
+  (metrics) => async (event: AWSLambda.S3Event) => {
+    metrics.setNamespace(METRIC_NAMESPACE);
+    const emailString = await fetchEmailFromS3(event);
+    const csvAttachment = await extractCsv(emailString);
+    const records = await parseCsv(csvAttachment);
+    const bookHighlights = formatBookHighlights(records);
+    const billioId = await findBillioId(bookHighlights.title);
+    metrics.putMetric(BILLIO_SEARCH_METRIC, billioId ? 1 : 0, Unit.Count);
+    console.log(
+      `Records to write: ${JSON.stringify(
+        { ...bookHighlights, billioId },
+        null,
+        2,
+      )}`,
+    );
+    await insertIntoDb({ ...bookHighlights, billioId });
+  },
+);
 
 interface BookHighlights {
   title: string;

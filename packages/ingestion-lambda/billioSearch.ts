@@ -28,7 +28,7 @@ const SEARCH_QUERY = gql`
   }
 `;
 
-export async function findBillioId(title: string) {
+export async function findBillioId(title: string): Promise<string | undefined> {
   const formattedTitle = formatSearchTerm(title);
   console.log(`Searching billio with search term: ${formattedTitle}`);
   const result = await CLIENT.query({
@@ -37,7 +37,6 @@ export async function findBillioId(title: string) {
       searchTerm: formattedTitle,
     },
   });
-  console.log(`GraphQL Response: ${JSON.stringify(result, null, 2)}`);
   const billioId = result.data.books.items?.[0]?.id;
   console.log(`Found billioId: ${billioId}`);
   return billioId;
