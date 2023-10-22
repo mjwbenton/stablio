@@ -34,7 +34,7 @@ export async function findBillioId(title: string) {
   const result = await CLIENT.query({
     query: SEARCH_QUERY,
     variables: {
-      searchTerm: title,
+      searchTerm: formattedTitle,
     },
   });
   console.log(`GraphQL Response: ${JSON.stringify(result, null, 2)}`);
