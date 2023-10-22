@@ -36,6 +36,24 @@ export class StablioApiStack extends TerraformStack {
       },
     });
 
+    new aws.iamRolePolicy.IamRolePolicy(
+      this,
+      "LambdaReadDatabaseSecretPolicy",
+      {
+        role: nodeJsFunction.role.name,
+        policy: JSON.stringify({
+          Version: "2012-10-17",
+          Statement: [
+            {
+              Effect: "Allow",
+              Action: ["secretsmanager:GetSecretValue"],
+              Resource: [databaseSecret.arn],
+            },
+          ],
+        }),
+      },
+    );
+
     const functionUrl = nodeJsFunction.addFunctionUrl();
 
     new TerraformOutput(this, "FunctionUrl", {
