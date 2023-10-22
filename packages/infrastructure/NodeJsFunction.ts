@@ -99,4 +99,11 @@ export class NodejsFunction extends Construct {
       },
     });
   }
+
+  public addFunctionUrl() {
+    return new aws.lambdaFunctionUrl.LambdaFunctionUrl(this, "FunctionUrl", {
+      functionName: this.lambda.functionName,
+      authorizationType: "NONE",
+    });
+  }
 }

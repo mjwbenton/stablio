@@ -7,8 +7,8 @@
   "scripts": {
     "build": "tsc",
     "synth": "cdktf synth",
-    "bootstrap": "AWS_PROFILE=admin-legacy-sso cdktf deploy stablio-data stablio-email stablio-ingestion",
-    "deploy": "cdktf deploy --auto-approve stablio-data stablio-email stablio-ingestion",
+    "bootstrap": "AWS_PROFILE=admin-legacy-sso cdktf deploy stablio-data stablio-email stablio-ingestion stablio-api",
+    "deploy": "cdktf deploy --auto-approve stablio-data stablio-email stablio-ingestion stablio-api",
     "format:check": "prettier --check '**/*' -u --ignore-path ../../.gitignore",
     "format:write": "prettier --write '**/*' -u --ignore-path ../../.gitignore",
     "postinstall": "cdktf get"
