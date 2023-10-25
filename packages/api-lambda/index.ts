@@ -14,6 +14,8 @@ export async function handler(event: AWSLambda.APIGatewayProxyEventV2) {
     .where(eq(book.billioId, billioId))
     .innerJoin(highlight, eq(book.id, highlight.bookId));
 
+  console.log(`Result from DB: ${JSON.stringify(result, null, 2)}`);
+
   if (!result.length) {
     return {
       statusCode: 404,
