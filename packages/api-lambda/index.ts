@@ -3,13 +3,31 @@ import {
   handlers,
   startServerAndCreateLambdaHandler,
 } from "@as-integrations/aws-lambda";
-import { readFileSync } from "fs";
 import { buildSubgraphSchema } from "@apollo/subgraph";
-import { parse } from "graphql";
 import { Resolvers } from "./generated/graphql";
 import { db, book, highlight, eq } from "@mattb.tech/stablio-db";
+import gql from "graphql-tag";
 
-const typeDefs = parse(readFileSync("./schema.graphql", { encoding: "utf-8" }));
+const typeDefs = gql`
+  extend schema
+    @link(
+      url: "https://specs.apollo.dev/federation/v2.0"
+      import: ["@key", "@shareable"]
+    )
+
+  type Query {
+    book(id: ID!): Book
+  }
+
+  type Book {
+    highlights: [Highlight!]!
+  }
+
+  type Highlight {
+    text: String!
+    location: Int!
+  }
+`;
 
 const resolvers: Resolvers = {
   Query: {

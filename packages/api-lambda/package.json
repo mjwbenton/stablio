@@ -18,7 +18,8 @@
     "@graphql-codegen/typescript": "^4.0.1",
     "@graphql-codegen/typescript-resolvers": "^4.0.1",
     "@mattb.tech/stablio-db": "*",
-    "graphql": "^16.8.1"
+    "graphql": "^16.8.1",
+    "graphql-tag": "^2.12.6"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",
