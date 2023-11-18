@@ -18,7 +18,7 @@ const typeDefs = gql`
 
   type Book @key(fields: "id") {
     id: ID!
-    highlights: [Highlight!]!
+    highlights(limit: Int): [Highlight!]!
   }
 
   type Highlight {
@@ -34,7 +34,8 @@ const DATALOADER = new DataLoader(async (ids: readonly string[]) => {
     .select()
     .from(book)
     .where(inArray(book.billioId, [...ids]))
-    .innerJoin(highlight, eq(book.id, highlight.bookId));
+    .innerJoin(highlight, eq(book.id, highlight.bookId))
+    .orderBy(highlight.location);
 
   const byBook = result.reduce<Record<string, Array<Highlight>>>(
     (acc, { book: { billioId }, highlight }) => {
@@ -60,6 +61,9 @@ const resolvers: Resolvers = {
   Book: {
     __resolveReference: async ({ id }) => {
       return DATALOADER.load(id);
+    },
+    highlights: async ({ id, highlights }, { limit }) => {
+      return highlights.slice(0, limit ?? 3);
     },
   },
 };
