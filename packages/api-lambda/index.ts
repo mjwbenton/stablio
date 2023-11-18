@@ -63,6 +63,7 @@ const resolvers: Resolvers = {
       return DATALOADER.load(id);
     },
     highlights: async ({ id, highlights }, { limit }) => {
+      return limit ? highlights.slice(0, limit) : highlights;
       return highlights.slice(0, limit ?? 3);
     },
   },
