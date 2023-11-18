@@ -4,7 +4,7 @@ import {
   startServerAndCreateLambdaHandler,
 } from "@as-integrations/aws-lambda";
 import { buildSubgraphSchema } from "@apollo/subgraph";
-import { Resolvers } from "./generated/graphql";
+import { Highlight, Resolvers } from "./generated/graphql";
 import { db, book, highlight, eq, inArray } from "@mattb.tech/stablio-db";
 import gql from "graphql-tag";
 import DataLoader from "dataloader";
@@ -36,18 +36,24 @@ const DATALOADER = new DataLoader(async (ids: readonly string[]) => {
     .where(inArray(book.billioId, [...ids]))
     .innerJoin(highlight, eq(book.id, highlight.bookId));
 
-  return ids.map((id) => {
-    const highlights = result
-      .filter(({ book: { billioId } }) => billioId === id)
-      .map(({ highlight: { location, text } }) => ({
-        location,
-        text,
-      }));
-    return {
-      id,
-      highlights,
-    };
-  });
+  const byBook = result.reduce<Record<string, Array<Highlight>>>(
+    (acc, { book: { billioId }, highlight }) => {
+      if (!billioId) {
+        return acc;
+      }
+      if (!acc[billioId]) {
+        acc[billioId] = [];
+      }
+      acc[billioId].push(highlight);
+      return acc;
+    },
+    {}
+  );
+
+  return ids.map((id) => ({
+    id,
+    highlights: byBook[id] || [],
+  }));
 });
 
 const resolvers: Resolvers = {
