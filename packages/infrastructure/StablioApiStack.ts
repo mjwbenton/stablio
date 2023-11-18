@@ -100,7 +100,15 @@ export class StablioApiStack extends TerraformStack {
         ],
         defaultCacheBehavior: {
           cachePolicyId: "4135ea2d-6df8-44a3-9df3-4b5a84be39ad", // CachingDisabled managed policy
-          allowedMethods: ["GET", "HEAD", "OPTIONS", "POST", "PUT"],
+          allowedMethods: [
+            "HEAD",
+            "DELETE",
+            "POST",
+            "GET",
+            "OPTIONS",
+            "PUT",
+            "PATCH",
+          ],
           cachedMethods: ["GET", "HEAD"],
           targetOriginId: "lambda-origin",
           viewerProtocolPolicy: "https-only",
