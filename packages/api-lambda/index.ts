@@ -1,41 +1,42 @@
+import { ApolloServer } from "@apollo/server";
+import {
+  handlers,
+  startServerAndCreateLambdaHandler,
+} from "@as-integrations/aws-lambda";
+import { readFileSync } from "fs";
+import { buildSubgraphSchema } from "@apollo/subgraph";
+import { parse } from "graphql";
+import { Resolvers } from "./generated/graphql";
 import { db, book, highlight, eq } from "@mattb.tech/stablio-db";
 
-export async function handler(event: AWSLambda.APIGatewayProxyEventV2) {
-  const [_, pathBook, billioId] = event.rawPath.split("/");
-  if (pathBook != "book" || !billioId) {
-    return response404();
-  }
-  const result = await (await db)
-    .select()
-    .from(book)
-    .where(eq(book.billioId, billioId))
-    .innerJoin(highlight, eq(book.id, highlight.bookId));
+const typeDefs = parse(readFileSync("./schema.graphql", { encoding: "utf-8" }));
 
-  if (!result.length) {
-    return response404();
-  }
+const resolvers: Resolvers = {
+  Query: {
+    book: async (_, { id }) => {
+      const result = await (await db)
+        .select()
+        .from(book)
+        .where(eq(book.billioId, id))
+        .innerJoin(highlight, eq(book.id, highlight.bookId));
+      return {
+        highlights: result.map(({ highlight: { location, text } }) => ({
+          location,
+          text,
+        })),
+      };
+    },
+  },
+};
 
-  return response200({
-    billioId,
-    highlights: result.map(({ highlight: { location, text } }) => ({
-      location,
-      text,
-    })),
-  });
-}
+const server = new ApolloServer({
+  schema: buildSubgraphSchema({
+    typeDefs,
+    resolvers,
+  }),
+});
 
-function response404() {
-  return {
-    statusCode: 404,
-    headers: { "content-type": "application/json; charset=utf-8" },
-    body: `{}`,
-  };
-}
-
-function response200(body: any) {
-  return {
-    statusCode: 200,
-    headers: { "content-type": "application/json; charset=utf-8" },
-    body: JSON.stringify(body),
-  };
-}
+export const handler = startServerAndCreateLambdaHandler(
+  server,
+  handlers.createAPIGatewayProxyEventRequestHandler()
+);

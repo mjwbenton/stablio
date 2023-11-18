@@ -3,15 +3,22 @@
   "version": "1.0.0",
   "main": "index.js",
   "types": "index.ts",
-  "type": "module",
   "private": true,
   "scripts": {
-    "build": "tsc",
+    "build": "yarn codegen && tsc",
     "format:check": "prettier --check '**/*' -u --ignore-path ../../.gitignore",
-    "format:write": "prettier --write '**/*' -u --ignore-path ../../.gitignore"
+    "format:write": "prettier --write '**/*' -u --ignore-path ../../.gitignore",
+    "codegen": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
-    "@mattb.tech/stablio-db": "*"
+    "@apollo/server": "^4.9.5",
+    "@apollo/subgraph": "^2.5.7",
+    "@as-integrations/aws-lambda": "^3.1.0",
+    "@graphql-codegen/cli": "^5.0.0",
+    "@graphql-codegen/typescript": "^4.0.1",
+    "@graphql-codegen/typescript-resolvers": "^4.0.1",
+    "@mattb.tech/stablio-db": "*",
+    "graphql": "^16.8.1"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",
