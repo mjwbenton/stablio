@@ -15,11 +15,8 @@ const typeDefs = gql`
       import: ["@key", "@shareable"]
     )
 
-  type Query {
-    book(id: ID!): Book
-  }
-
-  type Book {
+  type Book @key(fields: "id") {
+    id: ID!
     highlights: [Highlight!]!
   }
 
@@ -30,14 +27,15 @@ const typeDefs = gql`
 `;
 
 const resolvers: Resolvers = {
-  Query: {
-    book: async (_, { id }) => {
+  Book: {
+    __resolveReference: async ({ id }) => {
       const result = await (await db)
         .select()
         .from(book)
         .where(eq(book.billioId, id))
         .innerJoin(highlight, eq(book.id, highlight.bookId));
       return {
+        id,
         highlights: result.map(({ highlight: { location, text } }) => ({
           location,
           text,
