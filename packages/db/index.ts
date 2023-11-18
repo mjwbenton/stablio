@@ -1,3 +1,3 @@
 export * from "./db";
 export * from "./schema";
-export { sql, eq } from "drizzle-orm";
+export { sql, eq, inArray } from "drizzle-orm";
