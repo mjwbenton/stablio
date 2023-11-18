@@ -14,7 +14,7 @@ export class StablioApiStack extends TerraformStack {
 
     {
       databaseSecret,
-    }: { databaseSecret: aws.secretsmanagerSecret.SecretsmanagerSecret },
+    }: { databaseSecret: aws.secretsmanagerSecret.SecretsmanagerSecret }
   ) {
     super(scope, name);
 
@@ -34,7 +34,7 @@ export class StablioApiStack extends TerraformStack {
       {
         region: "us-east-1",
         alias: "aws-us-east-1",
-      },
+      }
     );
 
     new random.provider.RandomProvider(this, "random");
@@ -62,7 +62,7 @@ export class StablioApiStack extends TerraformStack {
             },
           ],
         }),
-      },
+      }
     );
 
     const functionUrl = nodeJsFunction.addFunctionUrl();
@@ -74,7 +74,7 @@ export class StablioApiStack extends TerraformStack {
         provider: usEast1Provider,
         domainName: DOMAIN_NAME,
         validationMethod: "DNS",
-      },
+      }
     );
 
     const distribution = new aws.cloudfrontDistribution.CloudfrontDistribution(
@@ -87,7 +87,7 @@ export class StablioApiStack extends TerraformStack {
             domainName: Fn.replace(
               Fn.replace(functionUrl.functionUrl, "https://", ""),
               "/",
-              "",
+              ""
             ),
             originId: "lambda-origin",
             customOriginConfig: {
@@ -100,7 +100,7 @@ export class StablioApiStack extends TerraformStack {
         ],
         defaultCacheBehavior: {
           cachePolicyId: "4135ea2d-6df8-44a3-9df3-4b5a84be39ad", // CachingDisabled managed policy
-          allowedMethods: ["GET", "HEAD", "OPTIONS"],
+          allowedMethods: ["GET", "HEAD", "OPTIONS", "POST", "PUT"],
           cachedMethods: ["GET", "HEAD"],
           targetOriginId: "lambda-origin",
           viewerProtocolPolicy: "https-only",
@@ -115,7 +115,7 @@ export class StablioApiStack extends TerraformStack {
           },
         },
         aliases: [DOMAIN_NAME],
-      },
+      }
     );
 
     const hostedZone = new aws.dataAwsRoute53Zone.DataAwsRoute53Zone(
@@ -124,7 +124,7 @@ export class StablioApiStack extends TerraformStack {
       {
         name: "mattb.tech",
         privateZone: false,
-      },
+      }
     );
 
     new aws.route53Record.Route53Record(this, "ARecord", {
@@ -149,7 +149,7 @@ export class StablioApiStack extends TerraformStack {
         name: validationRequirement.resourceRecordName,
         records: [validationRequirement.resourceRecordValue],
         type: validationRequirement.resourceRecordType,
-      },
+      }
     );
 
     new aws.acmCertificateValidation.AcmCertificateValidation(
@@ -159,7 +159,7 @@ export class StablioApiStack extends TerraformStack {
         provider: usEast1Provider,
         certificateArn: certificate.arn,
         validationRecordFqdns: [validationRecord.fqdn],
-      },
+      }
     );
   }
 }
