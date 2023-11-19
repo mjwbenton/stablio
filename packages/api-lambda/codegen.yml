@@ -10,3 +10,5 @@ generates:
       skipTypename: true
       useIndexSignature: true
       federation: true
+      mappers:
+        Book: "./index.ts#Book"

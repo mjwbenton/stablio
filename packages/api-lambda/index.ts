@@ -18,7 +18,14 @@ const typeDefs = gql`
 
   type Book @key(fields: "id") {
     id: ID!
-    highlights(limit: Int): [Highlight!]!
+    highlights(first: Int, after: ID): PaginatedHighlights!
+  }
+
+  type PaginatedHighlights {
+    items: [Highlight!]!
+    total: Int!
+    hasNextPage: Boolean!
+    nextPageCursor: ID
   }
 
   type Highlight {
@@ -26,6 +33,12 @@ const typeDefs = gql`
     location: Int!
   }
 `;
+
+type Book = {
+  id: string;
+};
+
+const DEFAULT_PAGE_SIZE = 50;
 
 const DATALOADER = new DataLoader(async (ids: readonly string[]) => {
   const result = await (
@@ -51,22 +64,51 @@ const DATALOADER = new DataLoader(async (ids: readonly string[]) => {
     {}
   );
 
-  return ids.map((id) => ({
-    id,
-    highlights: byBook[id] || [],
-  }));
+  return ids.map((id) => byBook[id] || []);
 });
 
 const resolvers: Resolvers = {
   Book: {
     __resolveReference: async ({ id }) => {
-      return DATALOADER.load(id);
+      return { id };
     },
-    highlights: async ({ id, highlights }, { limit }) => {
-      return limit ? highlights.slice(0, limit) : highlights;
+    highlights: async ({ id }, { first, after }) => {
+      const afterLocation = after ? cursorToLocation(after) : 0;
+      const highlights = await DATALOADER.load(id);
+      const afterIndex = highlights.findIndex(
+        (highlight) => highlight.location > afterLocation
+      );
+      if (afterIndex === -1) {
+        return {
+          items: [],
+          total: highlights.length,
+          hasNextPage: false,
+          nextPageCursor: null,
+        };
+      }
+      const items = highlights.slice(
+        afterIndex,
+        afterIndex + (first || DEFAULT_PAGE_SIZE)
+      );
+      return {
+        items,
+        total: highlights.length,
+        hasNextPage: highlights.length > afterIndex + items.length,
+        nextPageCursor: locationToCursor(
+          highlights[afterIndex + items.length - 1].location
+        ),
+      };
     },
   },
 };
+
+function locationToCursor(location: number) {
+  return Buffer.from(location.toString()).toString("base64");
+}
+
+function cursorToLocation(cursor: string) {
+  return parseInt(Buffer.from(cursor, "base64").toString("utf-8"));
+}
 
 const server = new ApolloServer({
   schema: buildSubgraphSchema({
