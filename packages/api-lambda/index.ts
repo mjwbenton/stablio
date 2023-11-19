@@ -78,25 +78,24 @@ const resolvers: Resolvers = {
       const afterIndex = highlights.findIndex(
         (highlight) => highlight.location > afterLocation
       );
-      if (afterIndex === -1) {
-        return {
-          items: [],
-          total: highlights.length,
-          hasNextPage: false,
-          nextPageCursor: null,
-        };
-      }
-      const items = highlights.slice(
-        afterIndex,
-        afterIndex + (first || DEFAULT_PAGE_SIZE)
-      );
+      const total = highlights.length;
+      const items =
+        afterIndex === -1
+          ? []
+          : highlights.slice(
+              afterIndex,
+              afterIndex + (first || DEFAULT_PAGE_SIZE)
+            );
+      const hasNextPage =
+        afterIndex === -1 ? false : total > afterIndex + items.length;
+      const nextPageCursor = hasNextPage
+        ? locationToCursor(highlights[afterIndex + items.length - 1].location)
+        : null;
       return {
         items,
-        total: highlights.length,
-        hasNextPage: highlights.length > afterIndex + items.length,
-        nextPageCursor: locationToCursor(
-          highlights[afterIndex + items.length - 1].location
-        ),
+        total,
+        hasNextPage,
+        nextPageCursor,
       };
     },
   },
