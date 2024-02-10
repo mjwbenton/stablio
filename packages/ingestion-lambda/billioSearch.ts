@@ -5,6 +5,40 @@ import {
   gql,
 } from "@apollo/client/core";
 
+const WORDS_NOT_TO_CAPITALIZE = [
+  "A",
+  "And",
+  "As",
+  "At",
+  "But",
+  "By",
+  "Down",
+  "For",
+  "From",
+  "If",
+  "In",
+  "Into",
+  "Like",
+  "Near",
+  "Nor",
+  "Of",
+  "Off ",
+  "On",
+  "Once",
+  "Onto",
+  "Or",
+  "Over",
+  "Past",
+  "So",
+  "Than",
+  "That",
+  "To",
+  "Upon",
+  "When",
+  "With",
+  "Yet",
+];
+
 const ENDPOINT = "https://api-readonly.billio.mattb.tech";
 const CLIENT = new ApolloClient({
   cache: new InMemoryCache(),
@@ -44,8 +78,13 @@ export async function findBillioId(title: string): Promise<string | undefined> {
 
 function formatSearchTerm(title: string) {
   const [mainTitle] = title.split(":");
-  const recased = mainTitle
-    .toLowerCase()
-    .replace(/\b\w/g, (s) => s.toUpperCase());
-  return recased;
+  const words = mainTitle.toLowerCase().split(" ");
+  return words
+    .map((word, i) => {
+      if (i !== 0 && WORDS_NOT_TO_CAPITALIZE.includes(word)) {
+        return word;
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
 }
