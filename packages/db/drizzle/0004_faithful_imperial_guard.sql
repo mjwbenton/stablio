@@ -1,0 +1,2 @@
+ALTER TABLE "highlight" DROP CONSTRAINT "highlight_bookId_location_unique";--> statement-breakpoint
+ALTER TABLE "highlight" ADD CONSTRAINT "highlight_bookId_location_text_unique" UNIQUE("bookId","location","text");

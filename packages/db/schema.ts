@@ -33,7 +33,7 @@ export const highlight = pgTable(
     text: text("text").notNull(),
   },
   (t) => ({
-    unq: unique().on(t.bookId, t.location),
+    unq: unique().on(t.bookId, t.location, t.text),
     bookIdIdx: index().on(t.bookId),
   }),
 );
