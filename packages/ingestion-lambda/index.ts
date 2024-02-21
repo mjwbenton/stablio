@@ -23,11 +23,11 @@ export const handler = metricScope(
       `Records to write: ${JSON.stringify(
         { ...bookHighlights, billioId },
         null,
-        2
-      )}`
+        2,
+      )}`,
     );
     await insertIntoDb({ ...bookHighlights, billioId });
-  }
+  },
 );
 
 interface BookHighlights {
@@ -62,7 +62,7 @@ async function insertIntoDb({
     .insert(highlight)
     .values(highlights.map((value) => ({ bookId, ...value })))
     .onConflictDoUpdate({
-      target: [highlight.bookId, highlight.location],
+      target: [highlight.bookId, highlight.location, highlight.text],
       set: { text: sql`excluded.text` },
     });
 }
@@ -76,7 +76,7 @@ async function fetchEmailFromS3(event: AWSLambda.S3Event): Promise<string> {
     new GetObjectCommand({
       Bucket: bucket,
       Key: key,
-    })
+    }),
   );
 
   if (!data.Body) {
@@ -111,7 +111,7 @@ async function parseCsv(csvAttachment: string): Promise<string[][]> {
           rej(err);
         }
         res(records);
-      }
+      },
     );
   });
 }
