@@ -1,0 +1,26 @@
+{
+  "name": "@mattb.tech/stablio-email-parse-lambda",
+  "version": "1.0.0",
+  "main": "index.js",
+  "types": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "format:check": "prettier --check '**/*' -u --ignore-path ../../.gitignore",
+    "format:write": "prettier --write '**/*' -u --ignore-path ../../.gitignore"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.421.0",
+    "aws-embedded-metrics": "^4.1.0",
+    "mailparser": "^3.6.5"
+  },
+  "devDependencies": {
+    "@tsconfig/node18": "^18.2.2",
+    "@types/aws-lambda": "^8.10.122",
+    "@types/mailparser": "^3.4.1",
+    "@types/node": "18",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "name": "@mattb.tech/stablio-ingestion-lambda",
+  "name": "@mattb.tech/stablio-pdf-process-lambda",
   "version": "1.0.0",
   "main": "index.js",
   "types": "index.ts",
@@ -24,6 +24,7 @@
     "@tsconfig/node18": "^18.2.2",
     "@types/aws-lambda": "^8.10.122",
     "@types/mailparser": "^3.4.1",
+    "@types/node": "18",
     "prettier": "^3.0.3",
     "typescript": "^5.2.2"
   }

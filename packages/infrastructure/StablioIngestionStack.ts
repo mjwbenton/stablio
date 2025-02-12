@@ -6,8 +6,11 @@ import { NodejsFunction } from "./NodeJsFunction";
 import * as path from "path";
 
 export class StablioIngestionStack extends TerraformStack {
-  readonly lambda: aws.lambdaFunction.LambdaFunction;
-  readonly lambdaRole: aws.iamRole.IamRole;
+  readonly pdfProcessLambda: aws.lambdaFunction.LambdaFunction;
+  readonly pdfProcessLambdaRole: aws.iamRole.IamRole;
+  readonly emailParseLambda: aws.lambdaFunction.LambdaFunction;
+  readonly emailParseLambdaRole: aws.iamRole.IamRole;
+  readonly pdfBucket: aws.s3Bucket.S3Bucket;
 
   constructor(
     scope: Construct,
@@ -30,8 +33,44 @@ export class StablioIngestionStack extends TerraformStack {
 
     new random.provider.RandomProvider(this, "random");
 
-    const nodeJsFunction = new NodejsFunction(this, "LambdaCode", {
-      path: path.join(__dirname, "..", "ingestion-lambda"),
+    this.pdfBucket = new aws.s3Bucket.S3Bucket(this, "PdfBucket", {
+      bucketPrefix: "stablio-pdf-bucket",
+    });
+
+    // Create the email parse lambda that extracts PDFs from emails
+    const emailParseFunction = new NodejsFunction(this, "EmailParseLambda", {
+      path: path.join(__dirname, "..", "email-parse-lambda"),
+      handler: "index.handler",
+      environment: {
+        PDF_BUCKET: this.pdfBucket.bucket,
+      },
+    });
+
+    // Give email parse lambda permission to write to PDF bucket
+    new aws.iamRolePolicy.IamRolePolicy(
+      this,
+      "EmailParseWritePdfBucketPolicy",
+      {
+        role: emailParseFunction.role.name,
+        policy: JSON.stringify({
+          Version: "2012-10-17",
+          Statement: [
+            {
+              Effect: "Allow",
+              Action: ["s3:PutObject"],
+              Resource: [this.pdfBucket.arn + "/*"],
+            },
+          ],
+        }),
+      },
+    );
+
+    this.emailParseLambda = emailParseFunction.lambda;
+    this.emailParseLambdaRole = emailParseFunction.role;
+
+    // Create the PDF process lambda that handles PDFs and writes to the database
+    const pdfProcessFunction = new NodejsFunction(this, "PdfProcessLambda", {
+      path: path.join(__dirname, "..", "pdf-process-lambda"),
       handler: "index.handler",
       environment: {
         DATABASE_SECRET: databaseSecret.id,
@@ -40,9 +79,9 @@ export class StablioIngestionStack extends TerraformStack {
 
     new aws.iamRolePolicy.IamRolePolicy(
       this,
-      "LambdaReadDatabaseSecretPolicy",
+      "PdfProcessReadDatabaseSecretPolicy",
       {
-        role: nodeJsFunction.role.name,
+        role: pdfProcessFunction.role.name,
         policy: JSON.stringify({
           Version: "2012-10-17",
           Statement: [
@@ -56,7 +95,58 @@ export class StablioIngestionStack extends TerraformStack {
       },
     );
 
-    this.lambda = nodeJsFunction.lambda;
-    this.lambdaRole = nodeJsFunction.role;
+    this.pdfProcessLambda = pdfProcessFunction.lambda;
+    this.pdfProcessLambdaRole = pdfProcessFunction.role;
+
+    // Subscribe the PDF process lambda to the PDF bucket
+    this.subscribeLambdaToPdfUploads(this, "PdfProcess", {
+      lambda: this.pdfProcessLambda,
+      lambdaRole: this.pdfProcessLambdaRole,
+    });
+  }
+
+  private subscribeLambdaToPdfUploads(
+    scope: Construct,
+    id: string,
+    {
+      lambda,
+      lambdaRole,
+    }: {
+      lambda: aws.lambdaFunction.LambdaFunction;
+      lambdaRole: aws.iamRole.IamRole;
+    },
+  ) {
+    new aws.s3BucketNotification.S3BucketNotification(
+      scope,
+      `${id}BucketNotification`,
+      {
+        bucket: this.pdfBucket.bucket,
+        lambdaFunction: [
+          {
+            lambdaFunctionArn: lambda.arn,
+            events: ["s3:ObjectCreated:*"],
+          },
+        ],
+      },
+    );
+    new aws.lambdaPermission.LambdaPermission(scope, `${id}Permission`, {
+      functionName: lambda.functionName,
+      action: "lambda:InvokeFunction",
+      principal: "s3.amazonaws.com",
+      sourceArn: this.pdfBucket.arn,
+    });
+    new aws.iamRolePolicy.IamRolePolicy(scope, `${id}ReadS3Permission`, {
+      role: lambdaRole.name,
+      policy: JSON.stringify({
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Action: ["s3:GetObject", "s3:ListBucket"],
+            Resource: [this.pdfBucket.arn + "/*"],
+          },
+        ],
+      }),
+    });
   }
 }

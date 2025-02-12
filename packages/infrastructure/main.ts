@@ -10,10 +10,14 @@ const ingestionStack = new StablioIngestionStack(app, "stablio-ingestion", {
   databaseSecret: dataStack.databaseSecret,
 });
 const emailStack = new StablioEmailStack(app, "stablio-email");
-emailStack.subscribeLambdaToNewEmails(ingestionStack, "IngestionSubscription", {
-  lambda: ingestionStack.lambda,
-  lambdaRole: ingestionStack.lambdaRole,
-});
+emailStack.subscribeLambdaToNewEmails(
+  ingestionStack,
+  "EmailParseSubscription",
+  {
+    lambda: ingestionStack.emailParseLambda,
+    lambdaRole: ingestionStack.emailParseLambdaRole,
+  },
+);
 new StablioApiStack(app, "stablio-api", {
   databaseSecret: dataStack.databaseSecret,
 });
