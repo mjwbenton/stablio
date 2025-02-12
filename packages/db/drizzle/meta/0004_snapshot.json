@@ -36,9 +36,7 @@
       "indexes": {
         "book_billioId_index": {
           "name": "book_billioId_index",
-          "columns": [
-            "billioId"
-          ],
+          "columns": ["billioId"],
           "isUnique": true
         }
       },
@@ -48,10 +46,7 @@
         "book_title_author_unique": {
           "name": "book_title_author_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "title",
-            "author"
-          ]
+          "columns": ["title", "author"]
         }
       }
     },
@@ -87,9 +82,7 @@
       "indexes": {
         "highlight_bookId_index": {
           "name": "highlight_bookId_index",
-          "columns": [
-            "bookId"
-          ],
+          "columns": ["bookId"],
           "isUnique": false
         }
       },
@@ -98,12 +91,8 @@
           "name": "highlight_bookId_book_id_fk",
           "tableFrom": "highlight",
           "tableTo": "book",
-          "columnsFrom": [
-            "bookId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["bookId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -113,11 +102,7 @@
         "highlight_bookId_location_text_unique": {
           "name": "highlight_bookId_location_text_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "bookId",
-            "location",
-            "text"
-          ]
+          "columns": ["bookId", "location", "text"]
         }
       }
     }

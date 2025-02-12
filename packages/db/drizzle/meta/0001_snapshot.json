@@ -34,10 +34,7 @@
         "book_title_author_unique": {
           "name": "book_title_author_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "title",
-            "author"
-          ]
+          "columns": ["title", "author"]
         }
       }
     },
@@ -76,12 +73,8 @@
           "name": "highlights_bookId_book_id_fk",
           "tableFrom": "highlights",
           "tableTo": "book",
-          "columnsFrom": [
-            "bookId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["bookId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -91,10 +84,7 @@
         "highlights_bookId_location_unique": {
           "name": "highlights_bookId_location_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "bookId",
-            "location"
-          ]
+          "columns": ["bookId", "location"]
         }
       }
     }

@@ -61,7 +61,7 @@ const DATALOADER = new DataLoader(async (ids: readonly string[]) => {
       acc[billioId].push(highlight);
       return acc;
     },
-    {}
+    {},
   );
 
   return ids.map((id) => byBook[id] || []);
@@ -76,7 +76,7 @@ const resolvers: Resolvers = {
       const afterLocation = after ? cursorToLocation(after) : 0;
       const highlights = await DATALOADER.load(id);
       const afterIndex = highlights.findIndex(
-        (highlight) => highlight.location > afterLocation
+        (highlight) => highlight.location > afterLocation,
       );
       const total = highlights.length;
       const items =
@@ -84,7 +84,7 @@ const resolvers: Resolvers = {
           ? []
           : highlights.slice(
               afterIndex,
-              afterIndex + (first || DEFAULT_PAGE_SIZE)
+              afterIndex + (first || DEFAULT_PAGE_SIZE),
             );
       const hasNextPage =
         afterIndex === -1 ? false : total > afterIndex + items.length;
@@ -118,5 +118,5 @@ const server = new ApolloServer({
 
 export const handler = startServerAndCreateLambdaHandler(
   server,
-  handlers.createAPIGatewayProxyEventV2RequestHandler()
+  handlers.createAPIGatewayProxyEventV2RequestHandler(),
 );
