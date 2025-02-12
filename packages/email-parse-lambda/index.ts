@@ -73,19 +73,51 @@ async function fetchEmailFromS3(event: AWSLambda.S3Event): Promise<string> {
 }
 
 function extractPdfUrl(emailText: string): string | null {
-  // Look for Amazon Kindle highlights URL
-  const urlMatch = emailText.match(
-    /@https:\/\/www\.amazon\.co\.uk\/gp\/f\.html\?.*?(?:&U=)(.*?)(?:&|$)/i
-  );
-  if (!urlMatch) {
-    return null;
-  }
-
-  // URL decode the PDF URL from the U parameter
   try {
-    return decodeURIComponent(urlMatch[1]);
+    // Log a truncated version of the email text for debugging
+    const truncatedText =
+      emailText.length > 200 ? emailText.substring(0, 200) + "..." : emailText;
+    console.log("Processing email text:", truncatedText);
+
+    // Look for Amazon Kindle highlights URL
+    const urlMatch = emailText.match(
+      /https:\/\/www\.amazon\.co\.uk\/gp\/f\.html\?.*?(?:&U=)(.*?)(?:&|$)/i
+    );
+    if (!urlMatch) {
+      console.error("No Amazon Kindle URL found in email text");
+      return null;
+    }
+
+    // Log the raw matched URL for debugging
+    console.log("Found raw Amazon URL:", urlMatch[0]);
+    console.log("Extracted encoded PDF URL:", urlMatch[1]);
+
+    // URL decode the PDF URL from the U parameter
+    const decodedUrl = decodeURIComponent(urlMatch[1]);
+
+    // Validate the decoded URL points to the expected S3 bucket
+    if (!decodedUrl.includes("kindle-content-requests-prod.s3.amazonaws.com")) {
+      console.error(
+        "Decoded URL does not point to expected S3 bucket:",
+        decodedUrl
+      );
+      return null;
+    }
+
+    // Validate the decoded URL ends with .pdf
+    if (!decodedUrl.toLowerCase().endsWith(".pdf")) {
+      console.error("Decoded URL does not point to a PDF file:", decodedUrl);
+      return null;
+    }
+
+    console.log("Successfully decoded PDF URL:", decodedUrl);
+    return decodedUrl;
   } catch (e) {
-    console.error("Failed to decode PDF URL:", e);
+    console.error("Error extracting PDF URL:", {
+      error: e instanceof Error ? e.message : String(e),
+      stack: e instanceof Error ? e.stack : undefined,
+      emailTextLength: emailText.length,
+    });
     return null;
   }
 }
