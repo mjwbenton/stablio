@@ -104,12 +104,6 @@ function extractPdfUrl(emailText: string): string | null {
       return null;
     }
 
-    // Validate the decoded URL ends with .pdf
-    if (!decodedUrl.toLowerCase().endsWith(".pdf")) {
-      console.error("Decoded URL does not point to a PDF file:", decodedUrl);
-      return null;
-    }
-
     console.log("Successfully decoded PDF URL:", decodedUrl);
     return decodedUrl;
   } catch (e) {
