@@ -1,9 +1,8 @@
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
-import mailparser from "mailparser";
-import { parse } from "csv-parse";
 import { db, book, highlight, sql } from "@mattb.tech/stablio-db";
 import { findBillioId } from "./billioSearch.js";
 import { Unit, metricScope } from "aws-embedded-metrics";
+import { PDFDocument } from "pdf-lib";
 
 const S3 = new S3Client({});
 
@@ -13,10 +12,8 @@ const BILLIO_SEARCH_METRIC = "BillioSearchSuccess";
 export const handler = metricScope(
   (metrics) => async (event: AWSLambda.S3Event) => {
     metrics.setNamespace(METRIC_NAMESPACE);
-    const emailString = await fetchEmailFromS3(event);
-    const csvAttachment = await extractCsv(emailString);
-    const records = await parseCsv(csvAttachment);
-    const bookHighlights = formatBookHighlights(records);
+    const pdfBuffer = await fetchPdfFromS3(event);
+    const bookHighlights = await extractHighlightsFromPdf(pdfBuffer);
     const billioId = await findBillioId(bookHighlights.title);
     metrics.putMetric(BILLIO_SEARCH_METRIC, billioId ? 1 : 0, Unit.Count);
     console.log(
@@ -67,7 +64,7 @@ async function insertIntoDb({
     });
 }
 
-async function fetchEmailFromS3(event: AWSLambda.S3Event): Promise<string> {
+async function fetchPdfFromS3(event: AWSLambda.S3Event): Promise<Buffer> {
   const record = event.Records[0];
   const bucket = record.s3.bucket.name;
   const key = decodeURIComponent(record.s3.object.key);
@@ -83,51 +80,23 @@ async function fetchEmailFromS3(event: AWSLambda.S3Event): Promise<string> {
     throw new Error("Missing data body");
   }
 
-  return data.Body.transformToString();
+  return Buffer.from(await data.Body.transformToByteArray());
 }
 
-async function extractCsv(emailString: string) {
-  const parsedEmail = await mailparser.simpleParser(emailString);
-  const csvAttachment = parsedEmail.attachments
-    .find(({ contentType }) => contentType === "text/csv")
-    ?.content.toString("utf-8");
-  if (!csvAttachment) {
-    throw new Error("No CSV attachment");
+async function extractHighlightsFromPdf(
+  pdfBuffer: Buffer
+): Promise<BookHighlights> {
+  const pdfDoc = await PDFDocument.load(pdfBuffer);
+  const pages = pdfDoc.getPages();
+
+  // Log entire PDF content
+  console.log("=== START PDF CONTENT ===");
+  for (let i = 0; i < pages.length; i++) {
+    const pageText = await pages[i].getText();
+    console.log(`\n=== PAGE ${i + 1} ===\n`);
+    console.log(pageText);
   }
-  return csvAttachment;
-}
+  console.log("=== END PDF CONTENT ===");
 
-async function parseCsv(csvAttachment: string): Promise<string[][]> {
-  return await new Promise<string[][]>((res, rej) => {
-    parse(
-      csvAttachment,
-      {
-        trim: true,
-        skip_empty_lines: true,
-        relax_quotes: true,
-      },
-      (err, records) => {
-        if (err) {
-          rej(err);
-        }
-        res(records);
-      }
-    );
-  });
-}
-
-function formatBookHighlights(records: string[][]): BookHighlights {
-  const [_, [title], [byLine], __, ___, ____, _____, ______, ...highlights] =
-    records;
-
-  const author = byLine.substring(3);
-
-  return {
-    title,
-    author,
-    highlights: highlights.map(([_, location, __, text]) => ({
-      location: parseInt(location.split(" ")[1]),
-      text,
-    })),
-  };
+  throw new Error("PDF processing not yet implemented");
 }

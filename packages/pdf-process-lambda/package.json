@@ -15,15 +15,12 @@
     "@aws-sdk/client-s3": "^3.421.0",
     "@mattb.tech/stablio-db": "*",
     "aws-embedded-metrics": "^4.1.0",
-    "csv-parse": "^5.5.2",
     "graphql": "^16.8.1",
-    "mailparser": "^3.6.5",
-    "stream-to-string": "^1.2.1"
+    "pdf-lib": "^1.17.1"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",
     "@types/aws-lambda": "^8.10.122",
-    "@types/mailparser": "^3.4.1",
     "@types/node": "18",
     "prettier": "^3.0.3",
     "typescript": "^5.2.2"
