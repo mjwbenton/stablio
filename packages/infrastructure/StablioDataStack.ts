@@ -24,6 +24,7 @@ export class StablioDataStack extends TerraformStack {
     const neonProject = new neon.project.Project(this, "Project", {
       name: "stablio",
       regionId: "aws-eu-central-1",
+      historyRetentionSeconds: 86400,
     });
 
     this.databaseSecret = new aws.secretsmanagerSecret.SecretsmanagerSecret(
@@ -31,7 +32,7 @@ export class StablioDataStack extends TerraformStack {
       "Secret",
       {
         namePrefix: "stablio-data",
-      },
+      }
     );
 
     new aws.secretsmanagerSecretVersion.SecretsmanagerSecretVersion(
@@ -45,7 +46,7 @@ export class StablioDataStack extends TerraformStack {
           password: neonProject.databasePassword,
           db: neonProject.databaseName,
         }),
-      },
+      }
     );
 
     new TerraformOutput(this, "DatabaseSecretId", {
