@@ -23,7 +23,7 @@ const bundle = (workingDirectory: string) => {
   buildSync({
     entryPoints: ["index.ts"],
     platform: "node",
-    target: "node18",
+    target: "node20",
     bundle: true,
     format: "cjs",
     sourcemap: "external",
@@ -90,7 +90,7 @@ export class NodejsFunction extends Construct {
       s3Bucket: codeInBucket.bucket,
       s3Key: codeInBucket.key,
       role: this.role.arn,
-      runtime: "nodejs18.x",
+      runtime: "nodejs20.x",
       handler,
       memorySize: 1024,
       timeout: 10,
