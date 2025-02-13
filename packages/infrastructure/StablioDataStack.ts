@@ -32,7 +32,7 @@ export class StablioDataStack extends TerraformStack {
       "Secret",
       {
         namePrefix: "stablio-data",
-      }
+      },
     );
 
     new aws.secretsmanagerSecretVersion.SecretsmanagerSecretVersion(
@@ -46,7 +46,7 @@ export class StablioDataStack extends TerraformStack {
           password: neonProject.databasePassword,
           db: neonProject.databaseName,
         }),
-      }
+      },
     );
 
     new TerraformOutput(this, "DatabaseSecretId", {
