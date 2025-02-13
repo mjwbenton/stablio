@@ -2,7 +2,7 @@ import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { db, book, highlight, sql } from "@mattb.tech/stablio-db";
 import { findBillioId } from "./billioSearch.js";
 import { Unit, metricScope } from "aws-embedded-metrics";
-import { PDFDocument } from "pdf-lib";
+import PDFParser from "pdf2json";
 
 const S3 = new S3Client({});
 
@@ -86,17 +86,30 @@ async function fetchPdfFromS3(event: AWSLambda.S3Event): Promise<Buffer> {
 async function extractHighlightsFromPdf(
   pdfBuffer: Buffer
 ): Promise<BookHighlights> {
-  const pdfDoc = await PDFDocument.load(pdfBuffer);
-  const pages = pdfDoc.getPages();
+  return new Promise((resolve, reject) => {
+    const pdfParser = new PDFParser();
 
-  // Log entire PDF content
-  console.log("=== START PDF CONTENT ===");
-  for (let i = 0; i < pages.length; i++) {
-    const pageText = await pages[i].getText();
-    console.log(`\n=== PAGE ${i + 1} ===\n`);
-    console.log(pageText);
-  }
-  console.log("=== END PDF CONTENT ===");
+    pdfParser.on("pdfParser_dataReady", (pdfData) => {
+      console.log("=== START PDF CONTENT ===");
+      for (let i = 0; i < pdfData.Pages.length; i++) {
+        const page = pdfData.Pages[i];
+        console.log(`\n=== PAGE ${i + 1} ===\n`);
 
-  throw new Error("PDF processing not yet implemented");
+        // Each page has Texts array containing text elements
+        const texts = page.Texts.map((text) =>
+          decodeURIComponent(text.R.map((r) => r.T).join(" "))
+        );
+        console.log(texts.join("\n"));
+      }
+      console.log("=== END PDF CONTENT ===");
+
+      throw new Error("PDF processing not yet implemented");
+    });
+
+    pdfParser.on("pdfParser_dataError", (errData) => {
+      reject(new Error(`Error parsing PDF: ${errData.parserError}`));
+    });
+
+    pdfParser.parseBuffer(pdfBuffer);
+  });
 }
