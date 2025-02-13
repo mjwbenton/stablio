@@ -18,6 +18,7 @@
     "envalid": "^8.0.0"
   },
   "devDependencies": {
+    "@tsconfig/node18": "^18.2.2",
     "drizzle-kit": "^0.19.13",
     "prettier": "^3.0.3",
     "ts-node": "^10.9.1",
