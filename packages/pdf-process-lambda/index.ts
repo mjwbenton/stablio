@@ -90,18 +90,9 @@ async function extractHighlightsFromPdf(
     const pdfParser = new PDFParser();
 
     pdfParser.on("pdfParser_dataReady", (pdfData) => {
-      console.log("=== START PDF CONTENT ===");
-      for (let i = 0; i < pdfData.Pages.length; i++) {
-        const page = pdfData.Pages[i];
-        console.log(`\n=== PAGE ${i + 1} ===\n`);
-
-        // Each page has Texts array containing text elements
-        const texts = page.Texts.map((text) =>
-          decodeURIComponent(text.R.map((r) => r.T).join(" "))
-        );
-        console.log(texts.join("\n"));
-      }
-      console.log("=== END PDF CONTENT ===");
+      console.log("=== START PDF STRUCTURE ===");
+      console.log(JSON.stringify(pdfData, null, 2));
+      console.log("=== END PDF STRUCTURE ===");
 
       throw new Error("PDF processing not yet implemented");
     });
