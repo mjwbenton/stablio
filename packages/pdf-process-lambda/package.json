@@ -16,12 +16,13 @@
     "@mattb.tech/stablio-db": "*",
     "aws-embedded-metrics": "^4.1.0",
     "graphql": "^16.8.1",
-    "pdf2json": "^3.1.2"
+    "pdf-parse": "^1.1.1"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",
     "@types/aws-lambda": "^8.10.122",
     "@types/node": "18",
+    "@types/pdf-parse": "^1.1.4",
     "prettier": "^3.0.3",
     "typescript": "^5.2.2"
   }
