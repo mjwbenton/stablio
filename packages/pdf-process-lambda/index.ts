@@ -92,5 +92,16 @@ async function extractHighlightsFromPdf(
   console.log({ pages });
   console.log("=== END PDF CONTENT ===");
 
+  // Extract title and author from first line of first page
+  const firstLine = pages[0].text.split("\n")[0];
+  const match = firstLine.match(/^[0-9]+ (.*?) by (.*?) Free/);
+  if (!match) {
+    throw new Error("Could not extract book title and author from PDF");
+  }
+
+  const [_, title, author] = match;
+
+  console.log("Extracted metadata:", { title, author });
+
   throw new Error("PDF processing not yet implemented");
 }
