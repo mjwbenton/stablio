@@ -8,7 +8,8 @@
     "build": "yarn codegen && tsc",
     "format:check": "prettier --check '**/*' -u --ignore-path ../../.gitignore",
     "format:write": "prettier --write '**/*' -u --ignore-path ../../.gitignore",
-    "codegen": "graphql-codegen --config codegen.yml"
+    "codegen": "graphql-codegen --config codegen.yml",
+    "test": "exit 0"
   },
   "dependencies": {
     "@apollo/server": "^4.9.5",

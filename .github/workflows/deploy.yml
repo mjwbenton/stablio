@@ -22,6 +22,8 @@ jobs:
           role-to-assume: arn:aws:iam::858777967843:role/github-actions-admin
           aws-region: us-east-1
       - run: yarn install --frozen-lockfile
+      - name: Run Tests
+        run: yarn test
       - name: Deploy Infra
         run: yarn deploy
         env:

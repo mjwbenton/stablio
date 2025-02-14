@@ -9,7 +9,8 @@
     "format:check": "prettier --check '**/*' -u --ignore-path ../../.gitignore",
     "format:write": "prettier --write '**/*' -u --ignore-path ../../.gitignore",
     "drizzle:generate": "drizzle-kit generate:pg --schema ./schema.ts",
-    "drizzle:migrate": "ts-node ./migrate.ts"
+    "drizzle:migrate": "ts-node ./migrate.ts",
+    "test": "exit 0"
   },
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.428.0",

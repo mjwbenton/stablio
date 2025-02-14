@@ -6,7 +6,8 @@
   ],
   "scripts": {
     "deploy": "yarn workspace @mattb.tech/stablio-infrastructure run deploy",
-    "db-migrate": "yarn workspace @mattb.tech/stablio-db run drizzle:migrate"
+    "db-migrate": "yarn workspace @mattb.tech/stablio-db run drizzle:migrate",
+    "test": "yarn workspaces run test"
   },
   "devDependencies": {
     "prettier": "^3.5.0"
