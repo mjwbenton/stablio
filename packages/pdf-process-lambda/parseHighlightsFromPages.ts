@@ -33,7 +33,7 @@ export function parseHighlightsFromPages(pages: Page[]): BookHighlights {
     for (const section of sections) {
       // Extract page number and highlight text
       const pageMatch = section.match(
-        /\| Page ([0-9]+)\s*(.*?)(?=(?:Page [0-9]+|Highlight \(Yellow\)|$))/s
+        /\| Page ([0-9]+)\s*(.*?)(?=\s*(?:Highlight \(Yellow\)|$))/s
       );
       if (pageMatch) {
         const [_, pageStr, text] = pageMatch;
