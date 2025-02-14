@@ -1,4 +1,3 @@
-import { jest } from "@jest/globals";
 import { describe, it, expect } from "@jest/globals";
 import { parseHighlightsFromPages } from "./parseHighlightsFromPages.js";
 

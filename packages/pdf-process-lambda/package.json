@@ -5,15 +5,11 @@
   "types": "index.ts",
   "type": "module",
   "private": true,
-  "exports": {
-    ".": "./index.js",
-    "./test/*": "./test/*.js"
-  },
   "scripts": {
     "build": "tsc",
     "format:check": "prettier --check '**/*' -u --ignore-path ../../.gitignore",
     "format:write": "prettier --write '**/*' -u --ignore-path ../../.gitignore",
-    "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js"
+    "test": "jest"
   },
   "dependencies": {
     "@apollo/client": "^3.8.6",
