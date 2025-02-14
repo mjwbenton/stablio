@@ -1,34 +1,19 @@
 /** @type {import('jest').Config} */
 const config = {
+  preset: "ts-jest/presets/default-esm",
+  moduleNameMapper: {
+    "^(\\.{1,2}/.*)\\.js$": "$1",
+  },
   transform: {
-    "^.+\\.(t|j)sx?$": [
-      "@swc/jest",
+    "^.+\\.tsx?$": [
+      "ts-jest",
       {
-        jsc: {
-          parser: {
-            syntax: "typescript",
-            tsx: false,
-            decorators: true,
-          },
-          target: "es2022",
-          keepClassNames: true,
-          transform: {
-            legacyDecorator: true,
-            decoratorMetadata: true,
-          },
-        },
-        module: {
-          type: "es6",
-        },
-        sourceMaps: "inline",
+        useESM: true,
       },
     ],
   },
   testEnvironment: "node",
   extensionsToTreatAsEsm: [".ts"],
-  moduleNameMapper: {
-    "^(\\.{1,2}/.*)\\.js$": "$1",
-  },
 };
 
 export default config;
