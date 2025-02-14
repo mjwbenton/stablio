@@ -29,6 +29,7 @@ const bundle = (workingDirectory: string) => {
     sourcemap: "external",
     outdir: "dist",
     absWorkingDir: workingDirectory,
+    external: ["pdf-parse"],
   });
 
   return join(workingDirectory, "dist");
@@ -45,7 +46,7 @@ export class NodejsFunction extends Construct {
       handler,
       path,
       environment,
-    }: { handler: string; path: string; environment?: Record<string, string> },
+    }: { handler: string; path: string; environment?: Record<string, string> }
   ) {
     super(scope, id);
     const namer = new Namer(this, id);
@@ -82,7 +83,7 @@ export class NodejsFunction extends Construct {
         policyArn:
           "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
         role: this.role.name,
-      },
+      }
     );
 
     this.lambda = new aws.lambdaFunction.LambdaFunction(this, "lambda", {
