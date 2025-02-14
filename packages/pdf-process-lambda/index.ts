@@ -2,7 +2,7 @@ import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { db, book, highlight, sql } from "@mattb.tech/stablio-db";
 import { findBillioId } from "./billioSearch.js";
 import { Unit, metricScope } from "aws-embedded-metrics";
-import pdfParse from "pdf-parse";
+import { pdfToText } from "pdf-ts";
 
 const S3 = new S3Client({});
 
@@ -86,21 +86,10 @@ async function fetchPdfFromS3(event: AWSLambda.S3Event): Promise<Buffer> {
 async function extractHighlightsFromPdf(
   pdfBuffer: Buffer
 ): Promise<BookHighlights> {
-  const data = await pdfParse(pdfBuffer);
+  const text = await pdfToText(pdfBuffer);
 
   console.log("=== START PDF CONTENT ===");
-  console.log(
-    JSON.stringify(
-      {
-        text: data.text,
-        info: data.info,
-        metadata: data.metadata,
-        version: data.version,
-      },
-      null,
-      2
-    )
-  );
+  console.log(text);
   console.log("=== END PDF CONTENT ===");
 
   throw new Error("PDF processing not yet implemented");

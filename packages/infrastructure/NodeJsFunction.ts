@@ -29,7 +29,6 @@ const bundle = (workingDirectory: string) => {
     sourcemap: "external",
     outdir: "dist",
     absWorkingDir: workingDirectory,
-    external: ["pdf-parse"],
   });
 
   return join(workingDirectory, "dist");
