@@ -5,6 +5,10 @@
   "types": "index.ts",
   "type": "module",
   "private": true,
+  "exports": {
+    ".": "./index.js",
+    "./test/*": "./test/*.js"
+  },
   "scripts": {
     "build": "tsc",
     "format:check": "prettier --check '**/*' -u --ignore-path ../../.gitignore",
