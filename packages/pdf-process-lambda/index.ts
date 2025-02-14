@@ -89,7 +89,7 @@ async function extractHighlightsFromPdf(
   const text = await pdfToText(pdfBuffer);
 
   console.log("=== START PDF CONTENT ===");
-  console.log(text);
+  console.log({ text });
   console.log("=== END PDF CONTENT ===");
 
   throw new Error("PDF processing not yet implemented");
