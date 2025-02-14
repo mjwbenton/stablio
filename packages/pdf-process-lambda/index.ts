@@ -88,10 +88,6 @@ async function extractHighlightsFromPdf(
 ): Promise<BookHighlights> {
   const pages = await pdfToPages(pdfBuffer, { nodeSep: " " });
 
-  console.log("=== START PDF CONTENT ===");
-  console.log({ pages });
-  console.log("=== END PDF CONTENT ===");
-
   // Extract title and author from first line of first page
   const firstLine = pages[0].text.split("\n")[0];
   const match = firstLine.match(/^[0-9]+ (.*?) by (.*?) Free/);
@@ -101,7 +97,36 @@ async function extractHighlightsFromPdf(
 
   const [_, title, author] = match;
 
-  console.log("Extracted metadata:", { title, author });
+  // Extract highlights from all pages
+  const highlights: BookHighlights["highlights"] = [];
 
-  throw new Error("PDF processing not yet implemented");
+  // Process each page separately
+  for (const page of pages) {
+    // Split on "Highlight (Yellow)" to get each highlight section
+    const sections = page.text.split("Highlight (Yellow)").slice(1);
+
+    for (const section of sections) {
+      // Extract page number and highlight text
+      const pageMatch = section.match(
+        /\| Page ([0-9]+)\s*(.*?)(?=(?:Page [0-9]+|Highlight \(Yellow\)|$))/s
+      );
+      if (pageMatch) {
+        const [_, pageStr, text] = pageMatch;
+        highlights.push({
+          location: parseInt(pageStr, 10),
+          text: text.trim(),
+        });
+      }
+    }
+  }
+
+  console.log({ title, author, highlights });
+
+  /*return {
+    title,
+    author,
+    highlights,
+  };*/
+
+  throw new Error("Implementation not finished");
 }
