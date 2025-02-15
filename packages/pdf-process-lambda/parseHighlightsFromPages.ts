@@ -16,6 +16,7 @@ function cleanText(text: string): string {
   const result = text
     .replace(/\s+/g, " ") // First normalize all whitespace to single spaces
     .replace(/['‘’]\s*([a-zA-Z])/g, "'$1") // Remove ALL spaces between any type of apostrophe/quote and any following letter
+    .replace(/([^\s])-\s+/g, "$1-") // Remove spaces after dashes when there's no space before the dash
     .trim();
   return result;
 }

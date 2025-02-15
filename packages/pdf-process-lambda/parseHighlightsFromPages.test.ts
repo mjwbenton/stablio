@@ -272,4 +272,21 @@ describe("parseHighlightsFromPages", () => {
       text: "This uses Location.",
     });
   });
+
+  it("should clean up spaces after dashes without spaces before them", () => {
+    const pages = [
+      {
+        page: 1,
+        text: "1 Test Book by Test Author Free\nPage  67 Highlight  (Yellow)  |  Page  67 treatment in separate and better- equipped facilities - seems perfectly sensible",
+      },
+    ];
+
+    const result = parseHighlightsFromPages(pages);
+
+    expect(result.highlights).toHaveLength(1);
+    expect(result.highlights[0]).toEqual({
+      location: 67,
+      text: "treatment in separate and better-equipped facilities - seems perfectly sensible",
+    });
+  });
 });
