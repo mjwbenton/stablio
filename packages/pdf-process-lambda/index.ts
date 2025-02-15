@@ -47,9 +47,11 @@ async function insertIntoDb({
     .values({ title, author, billioId })
     .onConflictDoUpdate({
       target: [book.title, book.author],
-      set: { author, title, billioId },
+      set: { billioId },
+      where: sql`${book.billioId} IS NULL`,
     })
     .returning({ bookId: book.id });
+
   await dbClient
     .insert(highlight)
     .values(highlights.map((value) => ({ bookId, ...value })))
