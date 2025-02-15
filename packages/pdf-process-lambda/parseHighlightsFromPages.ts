@@ -24,14 +24,14 @@ function cleanText(text: string): string {
 export function parseHighlightsFromPages(pages: Page[]): BookHighlights {
   // Extract title and author from first line of first page
   const firstLine = pages[0].text.split("\n")[0];
-  const match = firstLine.match(/^[0-9]+ (.*?) by (.*?) Free/);
+  const match = firstLine.match(/^[0-9]+ (.*?)(?:\s+by\s+(.*?))?\s+Free/);
   if (!match) {
     throw new Error("Could not extract book title and author from PDF");
   }
 
   const [_, rawTitle, rawAuthor] = match;
   const title = cleanText(rawTitle);
-  const author = cleanText(rawAuthor);
+  const author = rawAuthor ? cleanText(rawAuthor) : "";
 
   // Extract highlights from all pages
   const highlights: BookHighlights["highlights"] = [];

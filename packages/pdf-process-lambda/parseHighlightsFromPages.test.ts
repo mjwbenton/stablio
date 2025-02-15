@@ -218,7 +218,7 @@ describe("parseHighlightsFromPages", () => {
     const pages = [
       {
         page: 1,
-        text: "1 Test Book by Test Author Free\nPage  67 Highlight  (Yellow)  |  Page  67 Here' s a test with ASCII, here’ s one with Unicode.",
+        text: "1 Test Book by Test Author Free\nPage  67 Highlight  (Yellow)  |  Page  67 Here' s a test with ASCII, here' s one with Unicode.",
       },
     ];
 
@@ -288,5 +288,20 @@ describe("parseHighlightsFromPages", () => {
       location: 67,
       text: "treatment in separate and better-equipped facilities - seems perfectly sensible",
     });
+  });
+
+  it("should handle PDFs without an author", () => {
+    const pages = [
+      {
+        page: 1,
+        text: "123 Test Book Title Free\nSome other content",
+      },
+    ];
+
+    const result = parseHighlightsFromPages(pages);
+
+    expect(result.title).toBe("Test Book Title");
+    expect(result.author).toBe("");
+    expect(result.highlights).toHaveLength(0);
   });
 });
