@@ -56,13 +56,13 @@ async function insertIntoDb({
     })
     .returning({ bookId: book.id });
 
+  // Delete all existing highlights for this book
+  await dbClient.delete(highlight).where(sql`${highlight.bookId} = ${bookId}`);
+
+  // Insert new highlights
   await dbClient
     .insert(highlight)
-    .values(highlights.map((value) => ({ bookId, ...value })))
-    .onConflictDoUpdate({
-      target: [highlight.bookId, highlight.location, highlight.text],
-      set: { text: sql`excluded.text` },
-    });
+    .values(highlights.map((value) => ({ bookId, ...value })));
 }
 
 async function fetchPdfFromS3(event: AWSLambda.S3Event): Promise<Buffer> {
