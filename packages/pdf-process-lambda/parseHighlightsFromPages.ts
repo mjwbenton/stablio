@@ -13,7 +13,10 @@ export interface BookHighlights {
 }
 
 function cleanText(text: string): string {
-  return text.replace(/\s+/g, " ").trim();
+  return text
+    .replace(/\s+/g, " ") // First normalize all whitespace to single spaces
+    .replace(/'\s+([a-z])/g, "'$1") // Remove spaces between apostrophe and the following letter
+    .trim();
 }
 
 export function parseHighlightsFromPages(pages: Page[]): BookHighlights {

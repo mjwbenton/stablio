@@ -179,4 +179,38 @@ describe("parseHighlightsFromPages", () => {
       },
     ]);
   });
+
+  it("should properly handle contractions in highlight text", () => {
+    const pages = [
+      {
+        page: 1,
+        text: "1 Test Book by Test Author Free\nPage  67 Highlight  (Yellow)  |  Page  67 It' s important that they' re aware that we' ve done what' s needed and don' t need more.",
+      },
+    ];
+
+    const result = parseHighlightsFromPages(pages);
+
+    expect(result.highlights).toHaveLength(1);
+    expect(result.highlights[0]).toEqual({
+      location: 67,
+      text: "It's important that they're aware that we've done what's needed and don't need more.",
+    });
+  });
+
+  it("should handle real example with contractions", () => {
+    const pages = [
+      {
+        page: 1,
+        text: "1 Test Book by Test Author Free\nPage  67 Highlight  (Yellow)  |  Page  67 Honesty is powerful but it' s not something that comes easily to allistic people because they' re so driven to fit in with others that they prize collective values over truth.",
+      },
+    ];
+
+    const result = parseHighlightsFromPages(pages);
+
+    expect(result.highlights).toHaveLength(1);
+    expect(result.highlights[0]).toEqual({
+      location: 67,
+      text: "Honesty is powerful but it's not something that comes easily to allistic people because they're so driven to fit in with others that they prize collective values over truth.",
+    });
+  });
 });
