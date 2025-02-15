@@ -2,6 +2,7 @@ import { Construct } from "constructs";
 import { S3Backend, TerraformStack, Fn, TerraformOutput } from "cdktf";
 import * as neon from "./.gen/providers/neon";
 import * as aws from "@cdktf/provider-aws";
+import * as random from "@cdktf/provider-random";
 import { NodejsFunction } from "./NodeJsFunction";
 import * as path from "path";
 
@@ -22,6 +23,8 @@ export class StablioDataStack extends TerraformStack {
     });
 
     new neon.provider.NeonProvider(this, "Neon", {});
+
+    new random.provider.RandomProvider(this, "random");
 
     const neonProject = new neon.project.Project(this, "Project", {
       name: "stablio",
