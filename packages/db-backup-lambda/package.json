@@ -1,0 +1,25 @@
+{
+  "name": "@mattb.tech/stablio-db-backup-lambda",
+  "version": "1.0.0",
+  "main": "index.js",
+  "types": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "format:check": "prettier --check '**/*' -u --ignore-path ../../.gitignore",
+    "format:write": "prettier --write '**/*' -u --ignore-path ../../.gitignore",
+    "test": "exit 0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.421.0",
+    "@mattb.tech/stablio-db": "*"
+  },
+  "devDependencies": {
+    "@tsconfig/node18": "^18.2.2",
+    "@types/aws-lambda": "^8.10.122",
+    "@types/node": "18",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
+  }
+}
