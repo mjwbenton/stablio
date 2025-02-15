@@ -19,7 +19,7 @@ export const handler = metricScope(
     const email = await simpleParser(emailString);
 
     // Find PDF link in email body
-    const pdfUrl = extractPdfUrl(email.text || "");
+    const pdfUrl = extractPdfUrl(email.html || "");
     if (!pdfUrl) {
       console.error("No PDF URL found in email");
       metrics.putMetric(PDF_EXTRACT_SUCCESS_METRIC, 0, Unit.Count);
