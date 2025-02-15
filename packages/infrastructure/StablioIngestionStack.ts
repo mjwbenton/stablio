@@ -17,7 +17,7 @@ export class StablioIngestionStack extends TerraformStack {
     name: string,
     {
       databaseSecret,
-    }: { databaseSecret: aws.secretsmanagerSecret.SecretsmanagerSecret }
+    }: { databaseSecret: aws.secretsmanagerSecret.SecretsmanagerSecret },
   ) {
     super(scope, name);
 
@@ -62,7 +62,7 @@ export class StablioIngestionStack extends TerraformStack {
             },
           ],
         }),
-      }
+      },
     );
 
     this.emailParseLambda = emailParseFunction.lambda;
@@ -92,7 +92,7 @@ export class StablioIngestionStack extends TerraformStack {
             },
           ],
         }),
-      }
+      },
     );
 
     this.pdfProcessLambda = pdfProcessFunction.lambda;
@@ -120,7 +120,7 @@ export class StablioIngestionStack extends TerraformStack {
     }: {
       lambda: aws.lambdaFunction.LambdaFunction;
       lambdaRole: aws.iamRole.IamRole;
-    }
+    },
   ) {
     new aws.s3BucketNotification.S3BucketNotification(
       scope,
@@ -133,7 +133,7 @@ export class StablioIngestionStack extends TerraformStack {
             events: ["s3:ObjectCreated:*"],
           },
         ],
-      }
+      },
     );
     new aws.lambdaPermission.LambdaPermission(scope, `${id}Permission`, {
       functionName: lambda.functionName,

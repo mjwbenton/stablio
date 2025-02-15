@@ -18,7 +18,7 @@ https://www.amazon.co.uk/gp/f.html?M=123&T=C&U=https%3A%2F%2Fkindle-content-requ
 More content`;
 
     expect(extractPdfUrl(emailText)).toBe(
-      "https://kindle-content-requests-prod.s3.amazonaws.com/test.pdf"
+      "https://kindle-content-requests-prod.s3.amazonaws.com/test.pdf",
     );
   });
 
@@ -28,7 +28,7 @@ https://www.amazon.co.uk/gp/f.html?C=123&T=C&U=https%3A%2F%2Fkindle-content-requ
 More content`;
 
     expect(extractPdfUrl(emailText)).toBe(
-      "https://kindle-content-requests-prod.s3.amazonaws.com/Notebook%20-%20Test%20Book.pdf"
+      "https://kindle-content-requests-prod.s3.amazonaws.com/Notebook%20-%20Test%20Book.pdf",
     );
   });
 
@@ -49,7 +49,7 @@ https://www.amazon.co.uk/gp/f.html?C=123&t=c&u=https%3A%2F%2Fkindle-content-requ
 More content`;
 
     expect(extractPdfUrl(emailText)).toBe(
-      "https://kindle-content-requests-prod.s3.amazonaws.com/test.pdf"
+      "https://kindle-content-requests-prod.s3.amazonaws.com/test.pdf",
     );
   });
 

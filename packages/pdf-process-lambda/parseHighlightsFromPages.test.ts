@@ -76,7 +76,7 @@ describe("parseHighlightsFromPages", () => {
     ];
 
     expect(() => parseHighlightsFromPages(pages)).toThrow(
-      "Could not extract book title and author from PDF"
+      "Could not extract book title and author from PDF",
     );
   });
 
@@ -148,7 +148,7 @@ describe("parseHighlightsFromPages", () => {
     const result = parseHighlightsFromPages(pages);
 
     expect(result.title).toBe(
-      "Intermezzo: The global #1 bestseller from the author of Normal People"
+      "Intermezzo: The global #1 bestseller from the author of Normal People",
     );
     expect(result.author).toBe("Rooney, Sally");
     expect(result.highlights).toHaveLength(6);

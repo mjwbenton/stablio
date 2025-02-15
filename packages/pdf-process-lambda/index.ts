@@ -22,7 +22,7 @@ const BILLIO_SEARCH_METRIC = "BillioSearchSuccess";
 export const handler = metricScope(
   (metrics) =>
     async (
-      event: S3Event | APIGatewayProxyEventV2
+      event: S3Event | APIGatewayProxyEventV2,
     ): Promise<APIGatewayProxyStructuredResultV2 | void> => {
       metrics.setNamespace(METRIC_NAMESPACE);
 
@@ -82,9 +82,9 @@ export const handler = metricScope(
           bucket: record.s3.bucket.name,
           key: decodeURIComponent(record.s3.object.key),
         },
-        metrics
+        metrics,
       );
-    }
+    },
 );
 
 interface PdfLocation {
@@ -101,8 +101,8 @@ async function processPdf({ bucket, key }: PdfLocation, metrics: any) {
     `Records to write: ${JSON.stringify(
       { ...bookHighlights, billioId },
       null,
-      2
-    )}`
+      2,
+    )}`,
   );
   await insertIntoDb({
     ...bookHighlights,
@@ -168,7 +168,7 @@ async function fetchPdfFromS3({ bucket, key }: PdfLocation): Promise<Buffer> {
     new GetObjectCommand({
       Bucket: bucket,
       Key: key,
-    })
+    }),
   );
 
   if (!data.Body) {
@@ -179,7 +179,7 @@ async function fetchPdfFromS3({ bucket, key }: PdfLocation): Promise<Buffer> {
 }
 
 async function extractHighlightsFromPdf(
-  pdfBuffer: Buffer
+  pdfBuffer: Buffer,
 ): Promise<BookHighlights> {
   const pages = await pdfToPages(pdfBuffer, { nodeSep: " " });
   const rawHighlights = parseHighlightsFromPages(pages);

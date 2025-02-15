@@ -37,7 +37,7 @@ export class StablioDataStack extends TerraformStack {
       "Secret",
       {
         namePrefix: "stablio-data",
-      }
+      },
     );
 
     new aws.secretsmanagerSecretVersion.SecretsmanagerSecretVersion(
@@ -51,7 +51,7 @@ export class StablioDataStack extends TerraformStack {
           password: neonProject.databasePassword,
           db: neonProject.databaseName,
         }),
-      }
+      },
     );
 
     // Create backup bucket
@@ -100,7 +100,7 @@ export class StablioDataStack extends TerraformStack {
             },
           ],
         }),
-      }
+      },
     );
 
     // Create function URL for manual invocation
@@ -114,7 +114,7 @@ export class StablioDataStack extends TerraformStack {
         name: "stablio-backup-schedule",
         description: "Trigger database backup monthly",
         scheduleExpression: "rate(30 days)",
-      }
+      },
     );
 
     // Allow EventBridge to invoke the Lambda
@@ -133,7 +133,7 @@ export class StablioDataStack extends TerraformStack {
         rule: eventRule.name,
         arn: backupFunction.lambda.arn,
         targetId: "StablioBackupLambda",
-      }
+      },
     );
 
     new TerraformOutput(this, "DatabaseSecretId", {

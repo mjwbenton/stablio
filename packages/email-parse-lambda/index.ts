@@ -44,14 +44,14 @@ export const handler = metricScope(
         Key: pdfKey,
         Body: pdfBuffer,
         ContentType: "application/pdf",
-      })
+      }),
     );
 
     metrics.putMetric(PDF_EXTRACT_SUCCESS_METRIC, 1, Unit.Count);
     console.log(
-      `Successfully saved PDF to ${process.env.PDF_BUCKET}/${pdfKey}`
+      `Successfully saved PDF to ${process.env.PDF_BUCKET}/${pdfKey}`,
     );
-  }
+  },
 );
 
 async function fetchEmailFromS3(event: AWSLambda.S3Event): Promise<string> {
@@ -63,7 +63,7 @@ async function fetchEmailFromS3(event: AWSLambda.S3Event): Promise<string> {
     new GetObjectCommand({
       Bucket: bucket,
       Key: key,
-    })
+    }),
   );
 
   if (!data.Body) {

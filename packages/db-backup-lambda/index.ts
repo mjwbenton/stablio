@@ -57,7 +57,7 @@ export const handler = async (event: { version?: string }) => {
       Key: key,
       Body: JSON.stringify(backupData, null, 2),
       ContentType: "application/json",
-    })
+    }),
   );
 
   return {
