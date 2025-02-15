@@ -230,4 +230,46 @@ describe("parseHighlightsFromPages", () => {
       text: "Here's a test with ASCII, here's one with Unicode.",
     });
   });
+
+  it("should handle 'Location' instead of 'Page' in highlight format", () => {
+    const pages = [
+      {
+        page: 1,
+        text: "1 Test Book by Test Author Free\nLocation  67 Highlight  (Yellow)  |  Location  67 This is a highlight with Location instead of Page Highlight  (Yellow)  |  Location  89 And another one.",
+      },
+    ];
+
+    const result = parseHighlightsFromPages(pages);
+
+    expect(result.highlights).toHaveLength(2);
+    expect(result.highlights[0]).toEqual({
+      location: 67,
+      text: "This is a highlight with Location instead of Page",
+    });
+    expect(result.highlights[1]).toEqual({
+      location: 89,
+      text: "And another one.",
+    });
+  });
+
+  it("should handle mixed usage of 'Page' and 'Location'", () => {
+    const pages = [
+      {
+        page: 1,
+        text: "1 Test Book by Test Author Free\nPage  67 Highlight  (Yellow)  |  Page  67 This uses Page Highlight  (Yellow)  |  Location  89 This uses Location.",
+      },
+    ];
+
+    const result = parseHighlightsFromPages(pages);
+
+    expect(result.highlights).toHaveLength(2);
+    expect(result.highlights[0]).toEqual({
+      location: 67,
+      text: "This uses Page",
+    });
+    expect(result.highlights[1]).toEqual({
+      location: 89,
+      text: "This uses Location.",
+    });
+  });
 });
