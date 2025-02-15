@@ -5,3 +5,4 @@ dist
 .gen
 .env
 generated
+!jest.config.js
