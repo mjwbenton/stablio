@@ -12,6 +12,10 @@ export interface BookHighlights {
   }[];
 }
 
+function cleanText(text: string): string {
+  return text.replace(/\s+/g, " ").trim();
+}
+
 export function parseHighlightsFromPages(pages: Page[]): BookHighlights {
   // Extract title and author from first line of first page
   const firstLine = pages[0].text.split("\n")[0];
@@ -20,7 +24,9 @@ export function parseHighlightsFromPages(pages: Page[]): BookHighlights {
     throw new Error("Could not extract book title and author from PDF");
   }
 
-  const [_, title, author] = match;
+  const [_, rawTitle, rawAuthor] = match;
+  const title = cleanText(rawTitle);
+  const author = cleanText(rawAuthor);
 
   // Extract highlights from all pages
   const highlights: BookHighlights["highlights"] = [];
@@ -28,18 +34,19 @@ export function parseHighlightsFromPages(pages: Page[]): BookHighlights {
   // Process each page separately
   for (const page of pages) {
     // Split on "Highlight (Yellow)" to get each highlight section
-    const sections = page.text.split("Highlight (Yellow)").slice(1);
+    const sections = page.text.split("Highlight  (Yellow)").slice(1);
+    console.log(`Found ${sections.length} sections on page ${page.page}`);
 
     for (const section of sections) {
       // Extract page number and highlight text
       const pageMatch = section.match(
-        /\| Page ([0-9]+)\s*(.*?)(?=\s*(?:Highlight \(Yellow\)|$))/s
+        /\|\s*Page\s*([0-9]+)\s+(.*?)(?=(?:Page\s*[0-9]+|Highlight\s*\(Yellow\)|$))/s
       );
       if (pageMatch) {
         const [_, pageStr, text] = pageMatch;
         highlights.push({
           location: parseInt(pageStr, 10),
-          text: text.trim(),
+          text: cleanText(text),
         });
       }
     }

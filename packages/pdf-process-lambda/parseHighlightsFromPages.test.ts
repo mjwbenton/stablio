@@ -21,7 +21,7 @@ describe("parseHighlightsFromPages", () => {
     const pages = [
       {
         page: 1,
-        text: "123 Test Book by Test Author Free Some content Highlight (Yellow) | Page 67 First highlight text Highlight (Yellow) | Page 67 Second highlight text",
+        text: "123 Test Book by Test Author Free Some content Page  67 Highlight  (Yellow)  |  Page  67 First  highlight  text Highlight  (Yellow)  |  Page  67 Second  highlight  text",
       },
     ];
 
@@ -46,11 +46,11 @@ describe("parseHighlightsFromPages", () => {
       },
       {
         page: 2,
-        text: "Some text Highlight (Yellow) | Page 45 Page two highlight",
+        text: "Some text Page  45 Highlight  (Yellow)  |  Page  45 Page  two  highlight",
       },
       {
         page: 3,
-        text: "More text Highlight (Yellow) | Page 89 Page three highlight",
+        text: "More text Page  89 Highlight  (Yellow)  |  Page  89 Page  three  highlight",
       },
     ];
 
@@ -84,7 +84,7 @@ describe("parseHighlightsFromPages", () => {
     const pages = [
       {
         page: 1,
-        text: "123 Test Book by Test Author Free Highlight (Yellow) malformed highlight Highlight (Yellow) | Page 67 Valid highlight Highlight (Yellow) another malformed highlight",
+        text: "123 Test Book by Test Author Free Highlight  (Yellow) malformed highlight Highlight  (Yellow)  |  Page  67 Valid  highlight Highlight  (Yellow) another malformed highlight",
       },
     ];
 
@@ -101,7 +101,7 @@ describe("parseHighlightsFromPages", () => {
     const pages = [
       {
         page: 1,
-        text: "123 Test Book by Test Author Free Highlight (Yellow) | Page 67    Text with spaces    ",
+        text: "123 Test Book by Test Author Free Page  67 Highlight  (Yellow)  |  Page  67    Text  with  spaces    ",
       },
     ];
 
@@ -112,5 +112,71 @@ describe("parseHighlightsFromPages", () => {
       location: 67,
       text: "Text with spaces",
     });
+  });
+
+  it("should handle actual Kindle format with extra spaces", () => {
+    const pages = [
+      {
+        page: 1,
+        text: "1 Test Book by Test Author Free  Kindle  instant  preview:  https: //read. amazon. com/kp/test Page  67 Highlight  (Yellow)  |  Page  67 First  highlight  text  with  extra  spaces Highlight  (Yellow)  |  Page  67 Second  highlight  text  with  spaces",
+      },
+    ];
+
+    const result = parseHighlightsFromPages(pages);
+
+    expect(result.title).toBe("Test Book");
+    expect(result.author).toBe("Test Author");
+    expect(result.highlights).toHaveLength(2);
+    expect(result.highlights[0]).toEqual({
+      location: 67,
+      text: "First highlight text with extra spaces",
+    });
+    expect(result.highlights[1]).toEqual({
+      location: 67,
+      text: "Second highlight text with spaces",
+    });
+  });
+
+  it("should handle real Kindle page with multiple highlights", () => {
+    const pages = [
+      {
+        page: 1,
+        text: "1 Intermezzo:  The  global  #1  bestseller  from  the  author  of  Normal  People by  Rooney,  Sally Free  Kindle  instant  preview:  https: //read. amazon. com/kp/kshare? asin=B0CW1FQX9P 30  Highlights   |  Yellow  (30) Page  17 Highlight  (Yellow)  |  Page  17 Had  believed  once  that  life  must  lead  to  something,  all  the  unresolved  conflicts  and  questions  leading  on  towards  some  great  culmination.  Curiously  underexamined  beliefs  like  that,  underpinning  his  life,  his  personality.  Irrational  attachment  to  meaning. Page  32 Highlight  (Yellow)  |  Page  32 Do  chess  players  think  of  themselves  that  way,  as  the  king  piece? Page  67 Highlight  (Yellow)  |  Page  67 The  meaningless  lives  people  live.  And  afterwards,  oblivion,  forever Highlight  (Yellow)  |  Page  67 Just  to  think,  or  not  even  think,  but  to  overhear  the  words  inside  his  own  head. Page  76 Highlight  (Yellow)  |  Page  76 Relationship  mutilated  by  circumstance  into  something  illegible.  Platonic  life  partnership. Highlight  (Yellow)  |  Page  76 All  the  good  in  him,  what  little  there  is.  Trying  to  be  loved  by  her.  His  morality.  Principle  of  his  life.  She  looks  back  at  him.",
+      },
+    ];
+
+    const result = parseHighlightsFromPages(pages);
+
+    expect(result.title).toBe(
+      "Intermezzo: The global #1 bestseller from the author of Normal People"
+    );
+    expect(result.author).toBe("Rooney, Sally");
+    expect(result.highlights).toHaveLength(6);
+    expect(result.highlights).toEqual([
+      {
+        location: 17,
+        text: "Had believed once that life must lead to something, all the unresolved conflicts and questions leading on towards some great culmination. Curiously underexamined beliefs like that, underpinning his life, his personality. Irrational attachment to meaning.",
+      },
+      {
+        location: 32,
+        text: "Do chess players think of themselves that way, as the king piece?",
+      },
+      {
+        location: 67,
+        text: "The meaningless lives people live. And afterwards, oblivion, forever",
+      },
+      {
+        location: 67,
+        text: "Just to think, or not even think, but to overhear the words inside his own head.",
+      },
+      {
+        location: 76,
+        text: "Relationship mutilated by circumstance into something illegible. Platonic life partnership.",
+      },
+      {
+        location: 76,
+        text: "All the good in him, what little there is. Trying to be loved by her. His morality. Principle of his life. She looks back at him.",
+      },
+    ]);
   });
 });
