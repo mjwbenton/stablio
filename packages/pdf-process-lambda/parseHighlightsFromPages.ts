@@ -35,7 +35,6 @@ export function parseHighlightsFromPages(pages: Page[]): BookHighlights {
   for (const page of pages) {
     // Split on "Highlight (Yellow)" to get each highlight section
     const sections = page.text.split("Highlight  (Yellow)").slice(1);
-    console.log(`Found ${sections.length} sections on page ${page.page}`);
 
     for (const section of sections) {
       // Extract page number and highlight text

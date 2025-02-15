@@ -1,6 +1,7 @@
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { db, book, highlight, sql } from "@mattb.tech/stablio-db";
 import { findBillioId } from "./billioSearch.js";
+import { formatTitle } from "./formatTitle.js";
 import { Unit, metricScope } from "aws-embedded-metrics";
 import { pdfToPages } from "pdf-ts";
 import {
@@ -27,7 +28,10 @@ export const handler = metricScope(
         2
       )}`
     );
-    await insertIntoDb({ ...bookHighlights, billioId });
+    await insertIntoDb({
+      ...bookHighlights,
+      billioId,
+    });
   }
 );
 
@@ -84,5 +88,9 @@ async function extractHighlightsFromPdf(
   pdfBuffer: Buffer
 ): Promise<BookHighlights> {
   const pages = await pdfToPages(pdfBuffer, { nodeSep: " " });
-  return parseHighlightsFromPages(pages);
+  const rawHighlights = parseHighlightsFromPages(pages);
+  return {
+    ...rawHighlights,
+    title: formatTitle(rawHighlights.title),
+  };
 }
