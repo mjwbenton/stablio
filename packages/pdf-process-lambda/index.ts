@@ -8,6 +8,11 @@ import {
   parseHighlightsFromPages,
   BookHighlights,
 } from "./parseHighlightsFromPages.js";
+import {
+  APIGatewayProxyEventV2,
+  S3Event,
+  APIGatewayProxyStructuredResultV2,
+} from "aws-lambda";
 
 const S3 = new S3Client({});
 
@@ -15,25 +20,95 @@ const METRIC_NAMESPACE = "Stablio";
 const BILLIO_SEARCH_METRIC = "BillioSearchSuccess";
 
 export const handler = metricScope(
-  (metrics) => async (event: AWSLambda.S3Event) => {
-    metrics.setNamespace(METRIC_NAMESPACE);
-    const pdfBuffer = await fetchPdfFromS3(event);
-    const bookHighlights = await extractHighlightsFromPdf(pdfBuffer);
-    const billioId = await findBillioId(bookHighlights.title);
-    metrics.putMetric(BILLIO_SEARCH_METRIC, billioId ? 1 : 0, Unit.Count);
-    console.log(
-      `Records to write: ${JSON.stringify(
-        { ...bookHighlights, billioId },
-        null,
-        2
-      )}`
-    );
-    await insertIntoDb({
-      ...bookHighlights,
-      billioId,
-    });
-  }
+  (metrics) =>
+    async (
+      event: S3Event | APIGatewayProxyEventV2
+    ): Promise<APIGatewayProxyStructuredResultV2 | void> => {
+      metrics.setNamespace(METRIC_NAMESPACE);
+
+      if ("requestContext" in event) {
+        if (event.requestContext.http.method !== "POST") {
+          return {
+            statusCode: 405,
+            body: JSON.stringify({ error: "Method not allowed" }),
+            headers: { "Content-Type": "application/json" },
+          };
+        }
+
+        const body = JSON.parse(event.body || "{}");
+        const { key, bucket } = body;
+
+        if (!key || typeof key !== "string") {
+          return {
+            statusCode: 400,
+            body: JSON.stringify({
+              error: "Missing or invalid 'key' in request body",
+            }),
+            headers: { "Content-Type": "application/json" },
+          };
+        }
+
+        if (!bucket || typeof bucket !== "string") {
+          return {
+            statusCode: 400,
+            body: JSON.stringify({
+              error: "Missing or invalid 'bucket' in request body",
+            }),
+            headers: { "Content-Type": "application/json" },
+          };
+        }
+
+        try {
+          await processPdf({ key, bucket }, metrics);
+          return {
+            statusCode: 200,
+            body: JSON.stringify({ message: "Successfully processed PDF" }),
+            headers: { "Content-Type": "application/json" },
+          };
+        } catch (error) {
+          console.error("Error processing PDF:", error);
+          return {
+            statusCode: 500,
+            body: JSON.stringify({ error: "Failed to process PDF" }),
+            headers: { "Content-Type": "application/json" },
+          };
+        }
+      }
+
+      // Handle S3 event
+      const record = event.Records[0];
+      await processPdf(
+        {
+          bucket: record.s3.bucket.name,
+          key: decodeURIComponent(record.s3.object.key),
+        },
+        metrics
+      );
+    }
 );
+
+interface PdfLocation {
+  bucket: string;
+  key: string;
+}
+
+async function processPdf({ bucket, key }: PdfLocation, metrics: any) {
+  const pdfBuffer = await fetchPdfFromS3({ bucket, key });
+  const bookHighlights = await extractHighlightsFromPdf(pdfBuffer);
+  const billioId = await findBillioId(bookHighlights.title);
+  metrics.putMetric(BILLIO_SEARCH_METRIC, billioId ? 1 : 0, Unit.Count);
+  console.log(
+    `Records to write: ${JSON.stringify(
+      { ...bookHighlights, billioId },
+      null,
+      2
+    )}`
+  );
+  await insertIntoDb({
+    ...bookHighlights,
+    billioId,
+  });
+}
 
 interface BookHighlightsWithBillio extends BookHighlights {
   billioId: string | undefined;
@@ -88,11 +163,7 @@ async function insertIntoDb({
     .values(highlights.map((value) => ({ bookId, ...value })));
 }
 
-async function fetchPdfFromS3(event: AWSLambda.S3Event): Promise<Buffer> {
-  const record = event.Records[0];
-  const bucket = record.s3.bucket.name;
-  const key = decodeURIComponent(record.s3.object.key);
-
+async function fetchPdfFromS3({ bucket, key }: PdfLocation): Promise<Buffer> {
   const data = await S3.send(
     new GetObjectCommand({
       Bucket: bucket,

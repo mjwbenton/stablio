@@ -1,5 +1,5 @@
 import { Construct } from "constructs";
-import { S3Backend, TerraformStack } from "cdktf";
+import { S3Backend, TerraformStack, TerraformOutput } from "cdktf";
 import * as aws from "@cdktf/provider-aws";
 import * as random from "@cdktf/provider-random";
 import { NodejsFunction } from "./NodeJsFunction";
@@ -17,7 +17,7 @@ export class StablioIngestionStack extends TerraformStack {
     name: string,
     {
       databaseSecret,
-    }: { databaseSecret: aws.secretsmanagerSecret.SecretsmanagerSecret },
+    }: { databaseSecret: aws.secretsmanagerSecret.SecretsmanagerSecret }
   ) {
     super(scope, name);
 
@@ -62,7 +62,7 @@ export class StablioIngestionStack extends TerraformStack {
             },
           ],
         }),
-      },
+      }
     );
 
     this.emailParseLambda = emailParseFunction.lambda;
@@ -92,11 +92,17 @@ export class StablioIngestionStack extends TerraformStack {
             },
           ],
         }),
-      },
+      }
     );
 
     this.pdfProcessLambda = pdfProcessFunction.lambda;
     this.pdfProcessLambdaRole = pdfProcessFunction.role;
+
+    // Add function URL for manual PDF processing
+    const functionUrl = pdfProcessFunction.addFunctionUrl();
+    new TerraformOutput(this, "PdfProcessFunctionUrl", {
+      value: functionUrl.functionUrl,
+    });
 
     // Subscribe the PDF process lambda to the PDF bucket
     this.subscribeLambdaToPdfUploads(this, "PdfProcess", {
@@ -114,7 +120,7 @@ export class StablioIngestionStack extends TerraformStack {
     }: {
       lambda: aws.lambdaFunction.LambdaFunction;
       lambdaRole: aws.iamRole.IamRole;
-    },
+    }
   ) {
     new aws.s3BucketNotification.S3BucketNotification(
       scope,
@@ -127,7 +133,7 @@ export class StablioIngestionStack extends TerraformStack {
             events: ["s3:ObjectCreated:*"],
           },
         ],
-      },
+      }
     );
     new aws.lambdaPermission.LambdaPermission(scope, `${id}Permission`, {
       functionName: lambda.functionName,
