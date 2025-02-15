@@ -5,6 +5,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { simpleParser } from "mailparser";
 import { Unit, metricScope } from "aws-embedded-metrics";
+import { extractPdfUrl } from "./extractPdfUrl.js";
 
 const S3 = new S3Client({});
 
@@ -70,14 +71,4 @@ async function fetchEmailFromS3(event: AWSLambda.S3Event): Promise<string> {
   }
 
   return data.Body.transformToString();
-}
-
-function extractPdfUrl(emailText: string): string | null {
-  const urlMatch = emailText.match(
-    /https:\/\/www\.amazon\.co\.uk\/gp\/f\.html\?.*?(?:&U=)(.*?)(?:&|$)/i
-  );
-  if (!urlMatch) {
-    return null;
-  }
-  return decodeURIComponent(urlMatch[1]);
 }
