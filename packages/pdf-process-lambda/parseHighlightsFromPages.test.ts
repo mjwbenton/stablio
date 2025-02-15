@@ -213,4 +213,21 @@ describe("parseHighlightsFromPages", () => {
       text: "Honesty is powerful but it's not something that comes easily to allistic people because they're so driven to fit in with others that they prize collective values over truth.",
     });
   });
+
+  it("should handle different types of apostrophes", () => {
+    const pages = [
+      {
+        page: 1,
+        text: "1 Test Book by Test Author Free\nPage  67 Highlight  (Yellow)  |  Page  67 Here' s a test with ASCII, here' s one with Unicode, and here` s one with backtick.",
+      },
+    ];
+
+    const result = parseHighlightsFromPages(pages);
+
+    expect(result.highlights).toHaveLength(1);
+    expect(result.highlights[0]).toEqual({
+      location: 67,
+      text: "Here's a test with ASCII, here's one with Unicode, and here's one with backtick.",
+    });
+  });
 });
