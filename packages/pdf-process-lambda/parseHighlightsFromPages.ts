@@ -16,7 +16,7 @@ function cleanText(text: string): string {
   console.log("Before cleaning:", JSON.stringify(text));
   const result = text
     .replace(/\s+/g, " ") // First normalize all whitespace to single spaces
-    .replace(/[''`]\s+([a-zA-Z])/g, "'$1") // Remove spaces between any type of apostrophe and any following letter
+    .replace(/['‘’]\s*([a-zA-Z])/g, "'$1") // Remove ALL spaces between any type of apostrophe/quote and any following letter
     .trim();
   console.log("After cleaning:", JSON.stringify(result));
   return result;

@@ -218,7 +218,7 @@ describe("parseHighlightsFromPages", () => {
     const pages = [
       {
         page: 1,
-        text: "1 Test Book by Test Author Free\nPage  67 Highlight  (Yellow)  |  Page  67 Here' s a test with ASCII, here' s one with Unicode, and here` s one with backtick.",
+        text: "1 Test Book by Test Author Free\nPage  67 Highlight  (Yellow)  |  Page  67 Here' s a test with ASCII, here’ s one with Unicode.",
       },
     ];
 
@@ -227,7 +227,7 @@ describe("parseHighlightsFromPages", () => {
     expect(result.highlights).toHaveLength(1);
     expect(result.highlights[0]).toEqual({
       location: 67,
-      text: "Here's a test with ASCII, here's one with Unicode, and here's one with backtick.",
+      text: "Here's a test with ASCII, here's one with Unicode.",
     });
   });
 });
