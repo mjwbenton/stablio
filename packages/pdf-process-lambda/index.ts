@@ -46,15 +46,38 @@ async function insertIntoDb({
   highlights,
 }: BookHighlightsWithBillio): Promise<void> {
   const dbClient = await db;
-  const [{ bookId }] = await dbClient
-    .insert(book)
-    .values({ title, author, billioId })
-    .onConflictDoUpdate({
-      target: [book.title, book.author],
-      set: { billioId },
-      where: sql`${book.billioId} IS NULL`,
-    })
-    .returning({ bookId: book.id });
+
+  // First try to find an existing book by billioId if we have one
+  let bookId: number | undefined;
+  if (billioId) {
+    const existingBook = await dbClient
+      .select({ id: book.id })
+      .from(book)
+      .where(sql`${book.billioId} = ${billioId}`)
+      .limit(1);
+
+    if (existingBook.length > 0) {
+      bookId = existingBook[0].id;
+      // Update the title and author
+      await dbClient
+        .update(book)
+        .set({ title, author })
+        .where(sql`${book.id} = ${bookId}`);
+    }
+  }
+
+  // If we didn't find a book by billioId, try insert/update by title and author
+  if (!bookId) {
+    const [{ bookId: newBookId }] = await dbClient
+      .insert(book)
+      .values({ title, author, billioId })
+      .onConflictDoUpdate({
+        target: [book.title, book.author],
+        set: { billioId },
+      })
+      .returning({ bookId: book.id });
+    bookId = newBookId;
+  }
 
   // Delete all existing highlights for this book
   await dbClient.delete(highlight).where(sql`${highlight.bookId} = ${bookId}`);
