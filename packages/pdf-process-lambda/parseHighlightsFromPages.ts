@@ -12,11 +12,28 @@ export interface BookHighlights {
   }[];
 }
 
+const CONTRACTION_PATTERNS = [
+  "s", // it's, that's
+  "t", // don't, won't
+  "d", // he'd, we'd
+  "ll", // we'll, they'll
+  "ve", // we've, they've
+  "re", // they're, we're
+  "m", // I'm
+].join("|");
+
 function cleanText(text: string): string {
+  // List of letters/patterns that can follow an apostrophe in a contraction
   const result = text
     .replace(/\s+/g, " ") // First normalize all whitespace to single spaces
-    .replace(/['‘’]\s*([a-zA-Z])/g, "'$1") // Remove ALL spaces between any type of apostrophe/quote and any following letter
+    .replace(/['‘’]/g, "'") // Normalize all quotes to simple apostrophes
     .replace(/([^\s])-\s+/g, "$1-") // Remove spaces after dashes when there's no space before the dash
+    .replace(/'\s+/g, "'") // Remove any spaces after quotes (temporary)
+    .replace(
+      new RegExp(`([A-Za-z])'(?!(${CONTRACTION_PATTERNS})\\b)([A-Za-z])?`, "g"),
+      "$1' $3"
+    ) // Add space after non-contraction quotes
+    .replace(/\s+([.,!?])/g, "$1") // Remove spaces before punctuation
     .trim();
   return result;
 }
@@ -44,7 +61,7 @@ export function parseHighlightsFromPages(pages: Page[]): BookHighlights {
     for (const section of sections) {
       // Extract page/location number and highlight text
       const pageMatch = section.match(
-        /\|\s*(?:Page|Location)\s*([0-9]+)\s+(.*?)(?=(?:(?:Page|Location)\s*[0-9]+|Highlight\s*\(Yellow\)|$))/s,
+        /\|\s*(?:Page|Location)\s*([0-9]+)\s+(.*?)(?=(?:(?:Page|Location)\s*[0-9]+|Highlight\s*\(Yellow\)|$))/s
       );
       if (pageMatch) {
         const [_, pageStr, text] = pageMatch;

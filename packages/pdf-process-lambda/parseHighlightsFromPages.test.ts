@@ -218,7 +218,7 @@ describe("parseHighlightsFromPages", () => {
     const pages = [
       {
         page: 1,
-        text: "1 Test Book by Test Author Free\nPage  67 Highlight  (Yellow)  |  Page  67 Here' s a test with ASCII, here' s one with Unicode.",
+        text: "1 Test Book by Test Author Free\nPage  67 Highlight  (Yellow)  |  Page  67 Here' s a test with ASCII, here’ s one with Unicode.",
       },
     ];
 
@@ -303,5 +303,22 @@ describe("parseHighlightsFromPages", () => {
     expect(result.title).toBe("Test Book Title");
     expect(result.author).toBe("");
     expect(result.highlights).toHaveLength(0);
+  });
+
+  it("should handle quotes within quotes and maintain proper spacing", () => {
+    const pages = [
+      {
+        page: 1,
+        text: "1 Test Book by Test Author Free\nPage  67 Highlight  (Yellow)  |  Page  67 The initials 'PAG'made an appearance, signifying what was defined as a 'permanent, active and guaranteed role for the majority and minority alike'.",
+      },
+    ];
+
+    const result = parseHighlightsFromPages(pages);
+
+    expect(result.highlights).toHaveLength(1);
+    expect(result.highlights[0]).toEqual({
+      location: 67,
+      text: "The initials 'PAG' made an appearance, signifying what was defined as a 'permanent, active and guaranteed role for the majority and minority alike'.",
+    });
   });
 });
