@@ -31,7 +31,7 @@ function cleanText(text: string): string {
     .replace(/'\s+/g, "'") // Remove any spaces after quotes (temporary)
     .replace(
       new RegExp(`([A-Za-z])'(?!(${CONTRACTION_PATTERNS})\\b)([A-Za-z])?`, "g"),
-      "$1' $3"
+      "$1' $3",
     ) // Add space after non-contraction quotes
     .replace(/\s+([.,!?])/g, "$1") // Remove spaces before punctuation
     .trim();
@@ -61,7 +61,7 @@ export function parseHighlightsFromPages(pages: Page[]): BookHighlights {
     for (const section of sections) {
       // Extract page/location number and highlight text
       const pageMatch = section.match(
-        /\|\s*(?:Page|Location)\s*([0-9]+)\s+(.*?)(?=(?:(?:Page|Location)\s*[0-9]+|Highlight\s*\(Yellow\)|$))/s
+        /\|\s*(?:Page|Location)\s*([0-9]+)\s+(.*?)(?=(?:(?:Page|Location)\s*[0-9]+|Highlight\s*\(Yellow\)|$))/s,
       );
       if (pageMatch) {
         const [_, pageStr, text] = pageMatch;
