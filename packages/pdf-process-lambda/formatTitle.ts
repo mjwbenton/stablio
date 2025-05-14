@@ -39,9 +39,9 @@ export function formatTitle(title: string): string {
   // Split on colon and take first part, then clean up spaces
   const [mainTitle] = title.split(":").map((s) => s.trim());
   const words = mainTitle
-    .toLowerCase()
     .split(/\s+/)
-    .filter((word) => word.length > 0);
+    .filter((word) => word.length > 0)
+    .map((word) => word.charAt(0).toLowerCase() + word.slice(1));
 
   if (words.length === 0) return "";
 

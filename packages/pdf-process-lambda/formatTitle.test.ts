@@ -16,18 +16,13 @@ describe("formatTitle", () => {
     expect(formatTitle("Normal People: A Novel")).toBe("Normal People");
     expect(
       formatTitle(
-        "Intermezzo: The global #1 bestseller from the author of Normal People",
-      ),
+        "Intermezzo: The global #1 bestseller from the author of Normal People"
+      )
     ).toBe("Intermezzo");
   });
 
   it("should handle extra spaces", () => {
     expect(formatTitle("  the   great   gatsby  ")).toBe("The Great Gatsby");
-  });
-
-  it("should handle mixed case input", () => {
-    expect(formatTitle("tHe GrEaT gAtSbY")).toBe("The Great Gatsby");
-    expect(formatTitle("LORD OF THE FLIES")).toBe("Lord of the Flies");
   });
 
   it("should handle single word titles", () => {
@@ -37,5 +32,9 @@ describe("formatTitle", () => {
 
   it("should handle empty strings", () => {
     expect(formatTitle("")).toBe("");
+  });
+
+  it("should only lower case first letters of words", () => {
+    expect(formatTitle("Ex-Footballer")).toBe("Ex-Footballer");
   });
 });
