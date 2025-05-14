@@ -29,7 +29,6 @@ const WORDS_NOT_TO_CAPITALIZE = [
   "the",
   "to",
   "upon",
-  "when",
   "with",
   "yet",
 ];
