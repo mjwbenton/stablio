@@ -16,8 +16,8 @@ describe("formatTitle", () => {
     expect(formatTitle("Normal People: A Novel")).toBe("Normal People");
     expect(
       formatTitle(
-        "Intermezzo: The global #1 bestseller from the author of Normal People"
-      )
+        "Intermezzo: The global #1 bestseller from the author of Normal People",
+      ),
     ).toBe("Intermezzo");
   });
 
