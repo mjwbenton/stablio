@@ -70,4 +70,11 @@ https://www.amazon.co.uk/gp/f.html?C=VI3YYSH8F8SH&M=urn:rtn:msg:20250215141310df
       "https://kindle-content-requests-prod.s3.amazonaws.com/37996650-8fef-4610-a35d-37d99b567bdb/Notebook%20-%20The%20Glass%20Hotel_%20The%20Haunting%20Novel%20from%20the%20Author%20of%20Station%20Eleven.pdf?response-cache-control=no-store&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250215T141305Z&X-Amz-SignedHeaders=host&X-Amz-Credential=AKIAQNGCF4J7JEMRW6XN%2F20250215%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Expires=604800&X-Amz-Signature=1228ac15c4f3a8c48c95a4ea3f742a63816c326bc9f0e0ce7b77e227cd752cd9";
     expect(extractPdfUrl(emailText)).toBe(expected);
   });
+
+  it("should handle real world example 3", () => {
+    const emailText = `https://www.amazon.co.uk/gp/f.html?C=VI3YYSH8F8SH&M=urn:rtn:msg:202505141526007d65230c307a4c4dabf742c0d3a0p0eu&R=2A5C6FPAG4HCA&T=C&U=https%3A%2F%2Fkindle-content-requests-prod.s3.amazonaws.com%2F66388d53-143e-45d3-985a-9617f5ef7a66%2FNotebook%2520-%2520So%2520Much%2520Blue.pdf%3Fresponse-cache-control%3Dno-store%26X-Amz-Algorithm%3DAWS4-HMAC-SHA256%26X-Amz-Date%3D20250514T152556Z%26X-Amz-SignedHeaders%3Dhost%26X-Amz-Credential%3DAKIAQNGCF4J7OA7CTIWR%252F20250514%252Fus-east-1%252Fs3%252Faws4_request%26X-Amz-Expires%3D604800%26X-Amz-Signature%3De101161ca59643536f08e52126bccf8d1be0a76d6d6ec07d9dca251041f2c71f&H=3VMGOPIUXZIDLHGF8KSKUKIUZAKA`;
+    const expected =
+      "https://kindle-content-requests-prod.s3.amazonaws.com/66388d53-143e-45d3-985a-9617f5ef7a66/Notebook%20-%20So%20Much%20Blue.pdf?response-cache-control=no-store&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250514T152556Z&X-Amz-SignedHeaders=host&X-Amz-Credential=AKIAQNGCF4J7OA7CTIWR%2F20250514%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Expires=604800&X-Amz-Signature=e101161ca59643536f08e52126bccf8d1be0a76d6d6ec07d9dca251041f2c71f";
+    expect(extractPdfUrl(emailText)).toBe(expected);
+  });
 });

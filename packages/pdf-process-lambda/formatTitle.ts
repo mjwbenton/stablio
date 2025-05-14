@@ -1,5 +1,6 @@
 const WORDS_NOT_TO_CAPITALIZE = [
   "a",
+  "an",
   "and",
   "as",
   "at",
